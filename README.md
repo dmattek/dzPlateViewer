@@ -4,15 +4,15 @@ An html-based plate viewer for microscopy images using [DeepZoom](https://en.wik
 
 ## Big demo
 
-A demo web-viewer with a 384-well plate (24x16 wells, 4x4 FOVs per well) can be accessed [here](http://macdobry.net/deepzoomdemo/demoscreen/index.html).
+A demo web-viewer of a **6 gigapixel** image montage created out of 12'300 1024x1024 pixel images. The montage comes from imaging of an 384-well plate (24x16 wells, 4x4 FOVs per well, 2 channels). The demo can be accessed [here](http://macdobry.net/deepzoomdemo/demoscreen/index.html).
 
 ## Small demo
 
 A demo web-viewer with 2x2 wells, 4x4 FOVs per well can be accessed [here](http://macdobry.net/deepzoomdemo/demosite2x2/index.html).
 
-A `zip` archive with a demo dataset used to produce that demo can be downloaded from [here](https://www.dropbox.com/s/5cmejgy9x21434n/demodata2x2.zip?dl=0).
+A `zip` archive with a dataset used to produce that demo can be downloaded from [here](https://www.dropbox.com/s/5cmejgy9x21434n/demodata2x2.zip?dl=0).
 
-A `zip` archive with a full website with that demo can be downloaded from [here](https://www.dropbox.com/s/lwycuvlqdtirvr8/demosite2x2.zip?dl=0).
+A `zip` archive with a full demo website can be downloaded from [here](https://www.dropbox.com/s/lwycuvlqdtirvr8/demosite2x2.zip?dl=0).
 
 
 ## Building blocks
