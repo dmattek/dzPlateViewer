@@ -1,3 +1,4 @@
+// function that maps Rows and Columns to middle points of their respective wells
 function mapToInt(labels) {
   var num = 1;
   var mapping = {};
@@ -9,15 +10,16 @@ function mapToInt(labels) {
   return mapping
 }
 
+//function that creates a color scale for the heatmap values to be interpolated to
 function color(maxx, minn) {
   return d3.scaleSequential()
     .interpolator(d3.interpolateSpectral)
-    .domain([maxx, minn])
+    .domain([maxx, minn]) //theese are flipped around because the color scale available in d3 is the inverse of what is needed
 }
 
 function createHeatmap(viewer, id, df, value) {
   // set the dimensions and margins of the graph
-  var margin = { top: 0, right: 25, bottom: 30, left: 30 },
+  var margin = { top: 20, right: 25, bottom: 30, left: 30 },
     width = 500;
   height = 400;
 
@@ -34,23 +36,23 @@ function createHeatmap(viewer, id, df, value) {
   //Read the data
   d3.csv(df, function (data) {
 
-    // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
+    // Labels of row and columns 
     var myGroups = d3.map(data, function (d) { return d.Col; }).keys();
     var myVars = d3.map(data, function (d) { return d.Row; }).keys();
-    //var myVars = myVars.map(Number)
     myVars.sort()
+    // sort the groups numerically not lexicographically
     myGroups.sort(function (a, b) { return Number(a) - Number(b) })
-    console.log(myVars)
+    // create a mapping of  rows and columns of the data to the middle of their respective well
     var mapX = mapToInt(myGroups);
     var mapY = mapToInt(myVars);
+    // reverse the vars order to match the general plate order
     var myVars = myVars.reverse()
-    console.log(typeof (myGroups))
+    // find the minimum dimension of the plate as well as the inverse of the maximum dimension
     window.minDim = Math.min(myVars.length, myGroups.length)
-    window.maxWell = 1 / Math.max(myVars.length, myGroups.length)
+    window.maxWell = 1 / Math.max(myVars.length, myGroups.length) // inverse is taken directly as its needed as such in further calculations
 
-
+    // convert the target values to Numerical data type
     var valz = []
-
     data.map(function (d) {
       valz.push(d[value])
     })
@@ -78,8 +80,8 @@ function createHeatmap(viewer, id, df, value) {
       .select(".domain").remove()
 
     // Build color scale
-
     var myColor = color(d3.max(valz), d3.min(valz))
+
 
     // create a tooltip
     var tooltip = d3.select("#" + id)
@@ -114,16 +116,15 @@ function createHeatmap(viewer, id, df, value) {
         .style("opacity", 0.8)
     }
     var click = function (d) {
+      // reset before every zoom to default starting positions so that coordinats are properly synced
       viewer1.viewport.goHome(true)
-      var gr = d[0];
-      var cl = d[1];
-      //var px = new OpenSeadragon.Point(mapX[gr]*1100,mapY[cl]*1100)
-      var point = viewer.viewport.imageToViewportCoordinates(mapX[gr] * window.dim.x / (2 * myGroups.length), mapY[cl] * window.dim.y / (2 * myVars.length));
-      // var point = new OpenSeadragon.Point(0.1,0.2);
-      // viewer1.viewport.zoomTo(1,point,true);
+      var cl= d[0];
+      var rw = d[1];
+      //select a point to zoom to and convert it from pixelCoordinates to Viewport
+      var point = viewer.viewport.imageToViewportCoordinates(mapX[cl] * window.dim.x / (2 * myGroups.length), mapY[rw] * window.dim.y / (2 * myVars.length));
+      // move to the specified point and zoom to it
       viewer.viewport.panTo(point, true);
-      viewer.viewport.zoomBy(minDim - 0.3, true);
-
+      viewer.viewport.zoomBy(minDim - 0.3, true); //deducting 0.3 has shown to give good results empirically
 
     }
 
@@ -146,51 +147,32 @@ function createHeatmap(viewer, id, df, value) {
       .on("mousemove", mousemove)
       .on("mouseleave", mouseleave)
       .on("click", click)
-      .datum(function (d) { return [d.Col, d.Row, d[value]] })
+      .datum(function (d) { return [d.Col, d.Row, d[value]] })  //binds the actual data to individual squares important for color changes
 
 
-
+    // add the circles that are adjusted based on the slider treshold
     svg.selectAll("circle")
       .data(data)
       .enter()
       .append("circle")
-      .attr("cx", function (d) { return x(d.Col) + x.bandwidth()/2 })
-      .attr("cy", function (d) { return y(d.Row) + y.bandwidth()/2 })
+      .attr("cx", function (d) { return x(d.Col) + 10 })
+      .attr("cy", function (d) { return y(d.Row) + 10 })
       .attr("r", 0)
       .style("fill", "black")
-      .datum(function (d) { return d[value] })
-
-
+      .datum(function (d) { return d[value] }) // save the value of the specified data to the given circle
   })
 
-  // Add title to graph
-  //svg.append("text")
-  //      .attr("x", 0)
-  //    .attr("y", -50)
-  //  .attr("text-anchor", "left")
-  //.style("font-size", "22px")
-  //.text("A d3.js heatmap");
-
-  // Add subtitle to graph
-  //svg.append("text")
-  //      .attr("x", 0)
-  //    .attr("y", -20)
-  //  .attr("text-anchor", "left")
-  // .style("font-size", "14px")
-  //.style("fill", "grey")
-  //.style("max-width", 400)
-  //.text("A short description of the take-away message of this chart.");
 }
 
 
-//adding a color gradient 
+//adding a color gradient to see the span of colors that the heatmap takes 
 
 function drawScale(id, interpolator) {
   var data = Array.from(Array(100).keys());
 
   var cScale = d3.scaleSequential()
     .interpolator(interpolator)
-    .domain([99, 0]);
+    .domain([99, 0]); // another inverse to match the target color range
 
   var xScale = d3.scaleLinear()
     .domain([0, 99])
