@@ -155,8 +155,8 @@ function createHeatmap(viewer, id, df, value) {
       .data(data)
       .enter()
       .append("circle")
-      .attr("cx", function (d) { return x(d.Col) + 10 })
-      .attr("cy", function (d) { return y(d.Row) + 10 })
+      .attr("cx", function (d) { return x(d.Col) + x.bandwidth()/2 }) //makes sure squares are in the center
+      .attr("cy", function (d) { return y(d.Row) + y.bandwidth()/2 })
       .attr("r", 0)
       .style("fill", "black")
       .datum(function (d) { return d[value] }) // save the value of the specified data to the given circle

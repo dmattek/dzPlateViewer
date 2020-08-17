@@ -180,13 +180,7 @@
 			height: 100%;
 		}
 
-		seadragon-viewer {
-			position: absolute;
-			left: 0;
-			top: 30px;
-			right: 0;
-			bottom: 0;
-		}
+
 	</style>
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -594,18 +588,20 @@
 		});
 
 
+		var data = "mock.csv"
+		var value = "CNfrac_akt.mn"
 
 		//generate heatmaps and color-scale gradients
-		createHeatmap(viewer1, "my_dataviz", "mock.csv", "CNfrac_akt.mn")
-		createHeatmap(viewer1, "my_dataviz2", "mock.csv", "npi")
-		createHeatmap(viewer1, "my_dataviz3", "mock.csv", "zscore")
+		createHeatmap(viewer1, "my_dataviz", data, value)
+		createHeatmap(viewer1, "my_dataviz2", data, "npi")
+		createHeatmap(viewer1, "my_dataviz3", data, "zscore")
 		drawScale("seq317", d3.interpolateSpectral)
 		drawScale("seq318", d3.interpolateSpectral)
 		drawScale("seq319", d3.interpolateSpectral)
 		//generate sliders used to control specific heatmaps and wells at the given tab as well as the sliders to control the data range with respect to colors
-		createSlider(viewer1, "slider-simple", "mock.csv", "CNfrac_akt.mn", "my_dataviz", "slider-range")
-		createSlider(viewer1, "slider-simple2", "mock.csv", "npi", "my_dataviz2", "slider-range2")
-		createSlider(viewer1, "slider-simple3", "mock.csv", "zscore", "my_dataviz3", "slider-range3")
+		createSlider(viewer1, "slider-simple", data, value, "my_dataviz", "slider-range")
+		createSlider(viewer1, "slider-simple2", data, "npi", "my_dataviz2", "slider-range2")
+		createSlider(viewer1, "slider-simple3", data, "zscore", "my_dataviz3", "slider-range3")
 		//set up buttons to clear wells and heatmap
 		clearView("overlay", "my_dataviz")
 		clearView("overlay2", "my_dataviz2")
