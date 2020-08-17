@@ -1,3 +1,24 @@
+/*
+*This module is based on D3.js and was created for the purpose of creating 
+*interactive heatmaps that contain the data connected with dzi images of plates with melanoma cells.
+*Key features are: 
+* creating a heatmap from a specified csv dataset
+* zooming to a well on the dzi image that corresponds to a specific field selected on the heatmap
+* displaying the actual measurment value when hovering over a field in the heatmap
+* creating a color gradient that corresponds to colors in the heatmap
+*Main source for the heatmap code:
+*https://www.d3-graph-gallery.com/graph/heatmap_style.html
+*Main source for creating the gradient:
+*http://using-d3js.com/04_05_sequential_scales.html
+ */
+
+/**
+ * @author Milos Drobnjakovic
+ * affiliated with the University of Bern
+ */
+
+
+
 // function that maps Rows and Columns to middle points of their respective wells
 function mapToInt(labels) {
   var num = 1;
@@ -118,7 +139,7 @@ function createHeatmap(viewer, id, df, value) {
     var click = function (d) {
       // reset before every zoom to default starting positions so that coordinats are properly synced
       viewer1.viewport.goHome(true)
-      var cl= d[0];
+      var cl = d[0];
       var rw = d[1];
       //select a point to zoom to and convert it from pixelCoordinates to Viewport
       var point = viewer.viewport.imageToViewportCoordinates(mapX[cl] * window.dim.x / (2 * myGroups.length), mapY[rw] * window.dim.y / (2 * myVars.length));
@@ -155,8 +176,8 @@ function createHeatmap(viewer, id, df, value) {
       .data(data)
       .enter()
       .append("circle")
-      .attr("cx", function (d) { return x(d.Col) + x.bandwidth()/2 }) //makes sure squares are in the center
-      .attr("cy", function (d) { return y(d.Row) + y.bandwidth()/2 })
+      .attr("cx", function (d) { return x(d.Col) + x.bandwidth() / 2 }) //makes sure squares are in the center
+      .attr("cy", function (d) { return y(d.Row) + y.bandwidth() / 2 })
       .attr("r", 0)
       .style("fill", "black")
       .datum(function (d) { return d[value] }) // save the value of the specified data to the given circle

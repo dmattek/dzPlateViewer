@@ -1,3 +1,20 @@
+/*
+*This module is based on D3.js and was created for the purpose of creating 
+*sliders for interacting with the heatmap associated with dzi images of plates with melanoma cells
+and the wells within the plate images.
+*Key features are: 
+*creating a slider that will mark specific heatmap fields and create rectangles on the border of wells that have a value above the current slider value
+* creating a range slider that will clip the color generating range of the heatmap to the values specified by the slider
+* All slider values are generated from the same csv file used to generate the heatmaps heatm associated with it
+*Main source for generating sliders:
+*https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
+
+/**
+ *
+ * @author Milos Drobnjakovic
+ * affiliated with the University of Bern
+ */
+
 
 //mapping columns and rows to starting points of their respective wells expressed in viewport coordinates
 function mapToIntOverlay2(labels) {
