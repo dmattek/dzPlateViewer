@@ -1,0 +1,522 @@
+<html>
+
+	<title>XXXXX</title>
+
+<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<style>
+				body {font-family: Arial;}
+
+				/* Style the tab */
+				.tab {
+						overflow: hidden;
+						border: 1px solid #ccc;
+						background-color: #f1f1f1;
+				}
+
+				/* Style the buttons that are used to open the tab content */
+				.tab button {
+						background-color: inherit;
+						float: left;
+						border: none;
+						outline: none;
+						cursor: pointer;
+						padding: 14px 16px;
+						transition: 0.3s;
+				}
+
+				/* Change background color of buttons on hover */
+				.tab button:hover {
+						background-color: #ddd;
+				}
+
+				/* Create an active/current tablink class */
+				.tab button.active {
+						background-color: #ccc;
+				}
+
+				/* Style the tab content */
+				.tabcontent {
+						display: none;
+						padding: 6px 12px;
+						border: 1px solid #ccc;
+						border-top: none;
+				}
+
+				/* This stylesheet sets the width of all images to 100%: */
+				img {
+						width: 100%;
+				}
+
+				/* The switch - the box around the slider */
+				.switch {
+					position: relative;
+					display: inline-block;
+					width: 90px;
+					height: 34px;
+				}
+
+				/* Hide default HTML checkbox */
+				.switch input {
+					opacity: 0;
+					width: 0;
+					height: 0;
+				}
+
+				/* The slider */
+				.slider {
+					position: absolute;
+					cursor: pointer;
+					top: 0;
+					left: 0;
+					right: 0;
+					bottom: 0;
+					background-color: #ccc;
+					-webkit-transition: .4s;
+					transition: .4s;
+				}
+
+				.slider:before {
+					position: absolute;
+					content: "";
+					height: 26px;
+					width: 26px;
+					left: 4px;
+					bottom: 4px;
+					background-color: white;
+					-webkit-transition: .4s;
+					transition: .4s;
+				}
+
+				input:checked + .slider {
+					background-color: #2196F3;
+				}
+
+				input:focus + .slider {
+					box-shadow: 0 0 1px #2196F3;
+				}
+
+				input:checked + .slider:before {
+					-webkit-transform: translateX(55px);
+					-ms-transform: translateX(55px);
+					transform: translateX(55px);
+				}
+
+				.on
+				{
+					display: none;
+				}
+
+				.on, .off
+				{
+					color: white;
+					position: absolute;
+					transform: translate(-50%,-50%);
+					top: 50%;
+					left: 50%;
+					font-size: 10px;
+					font-family: Verdana, sans-serif;
+				}
+
+				input:checked+ .slider .on
+				{display: block;}
+
+				input:checked + .slider .off
+				{display: none;}
+
+				/* Long slider */
+				.slidecontainer {
+					width: 100%;
+				}
+
+				.sliderlong {
+					-webkit-appearance: none;
+					width: 100%;
+					height: 25px;
+					background: #d3d3d3;
+					outline: none;
+					opacity: 0.7;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+				}
+
+				.sliderlong:hover {
+					opacity: 1;
+				}
+
+				.sliderlong::-webkit-slider-thumb {
+					-webkit-appearance: none;
+					appearance: none;
+					width: 25px;
+					height: 25px;
+					background: #2196F3;
+					cursor: pointer;
+				}
+
+				.sliderlong::-moz-range-thumb {
+					width: 25px;
+					height: 25px;
+					background: #2196F3;
+					cursor: pointer;
+				}
+
+				osd {
+						width: 100%;
+						height: 100%;
+				}
+
+				seadragon-viewer {
+						position: absolute;
+						left: 0;
+						top: 30px;
+						right: 0;
+						bottom: 0;
+				}
+		</style>
+
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+		<script src="openseadragon/openseadragon.min.js"></script>
+		<script src="openseadragonfiltering/openseadragon-filtering.js"></script>
+
+</head>
+
+<body onload="document.getElementById('defaultOpenTab').click();">
+
+<h2>Plate XXXXX</h2>
+
+<!-- Tab links -->
+<div class="tab">
+	<button class="tablinks active" onclick="openTab(event, 'tabch0')" id="defaultOpenTab">Ch 0</button>
+	<button class="tablinks" onclick="openTab(event, 'tabch1')">Ch 1</button>
+	<button class="tablinks" onclick="openTab(event, 'tabch01')">Ch 0+1</button>
+	<button onclick="window.location.href = 'index.html';">Back to index</button>
+</div>
+
+<!-- Tab content -->
+
+<div id="tabch0" class="tabcontent">
+
+		<div class="col-md-8">
+				<div class="osd" id="osd0"></div>
+		</div>
+
+		<div class="col-md-4">
+			<br>
+			<p>Placeholder for additional content</p>
+		</div>
+</div>
+
+<div id="tabch1" class="tabcontent">
+
+		<div class="col-md-8">
+				<div class="osd" id="osd1"></div>
+		</div>
+
+		<div class="col-md-4">
+
+			<ul class="nav nav-tabs">
+				<li class="active">
+										<a href="#tabInt">Int</a>
+				</li>
+				<li>
+										<a href="#tabNPI">NPI</a>
+				</li>
+				<li>
+										<a href="#tabZscore">zScore</a>
+				</li>
+			</ul>
+
+						<div class="tab-content">
+							<div class="tab-pane fade active in" id="tabInt">
+								<br>
+								<p>Placeholder for a tile plot with mean intensities per well</p>
+							</div>
+
+							<div class="tab-pane fade" id="tabNPI">
+								<br>
+								<p>Placeholder for a tile plot with NPI of mean intensities per well</p>
+							</div>
+
+							<div class="tab-pane fade" id="tabZscore">
+								<br>
+								<p>Placeholder for a tile plot with z-score of mean intensities per well</p>
+							</div>
+
+						</div>
+		</div>
+</div>
+
+<div id="tabch01" class="tabcontent">
+
+		<div class="col-md-10">
+				<div class="osd" id="osd01"></div>
+		</div>
+
+		<div class="col-md-2">
+				<label class="switch">
+						<input type="checkbox" id="chbCh" onclick=fSwitchCh()>
+						<div class="slider">
+								<span class="on">Ch0</span>
+								<span class="off">Ch1</span>
+						</div>
+				</label>
+				<br>
+				<label class="switch">
+						<input type="checkbox" id="chbInv" onclick=fSwitchInv()>
+						<div class="slider">
+								<span class="on">Inv</span>
+								<span class="off">Orig</span>
+						</div>
+				</label>
+				<br>
+				<br>
+				<div class="slidecontainer">
+						<input type="range" min="-100" max="100" value="0" class="sliderlong" id="slBright">
+						<p>Brightness: <span id="valBright"></span></p>
+				</div>
+				<br>
+				<div class="slidecontainer">
+						<input type="range" min="0" max="4" value="1" step="0.1" class="sliderlong" id="slContr">
+						<p>Contrast: <span id="valContr"></span></p>
+				</div>
+				<br>
+				<div class="slidecontainer">
+						<input type="range" min="0" max="255" value="0" step="1" class="sliderlong" id="slLevMin">
+						<p>Level min: <span id="valLevMin"></span></p>
+				</div>
+				<br>
+				<div class="slidecontainer">
+						<input type="range" min="0" max="255" value="255" step="1" class="sliderlong" id="slLevMax">
+						<p>Level max: <span id="valLevMax"></span></p>
+				</div>
+
+		</div>
+</div>
+
+
+
+<script>
+		$("ul.nav-tabs a").click(function(e) {
+				console.log($(this));
+				e.preventDefault();
+				$(this).tab('show');
+		});
+
+		function openTab(evt, tabName) {
+				var i, tabcontent, tablinks;
+
+				tabcontent = document.getElementsByClassName("tabcontent");
+				for (i = 0; i < tabcontent.length; i++) {
+						tabcontent[i].style.display = "none";
+				}
+
+				tablinks = document.getElementsByClassName("tablinks");
+						for (i = 0; i < tablinks.length; i++) {
+								tablinks[i].className = tablinks[i].className.replace(" active", "");
+						}
+
+				document.getElementById(tabName).style.display = "block";
+				evt.currentTarget.className += " active";
+		};
+
+				// Tab ch0
+				var viewer0 = OpenSeadragon({
+						id: "osd0",
+						prefixUrl: "openseadragon/images/",
+						tileSources: [
+								"dzi_c0.dzi",
+						]
+				});
+
+				// Tab ch1
+				var viewer1 = OpenSeadragon({
+						id: "osd1",
+						prefixUrl: "openseadragon/images/",
+						tileSources: [
+								"dzi_c1.dzi",
+						]
+				});
+
+				// Tab ch0+1
+				var viewer01 = OpenSeadragon({
+						id: "osd01",
+						prefixUrl: "openseadragon/images/",
+						tileSources: [
+								{
+										opacity: 1,
+										tileSource: "dzi_c0.dzi"
+								},
+								{
+										opacity: 0,
+										tileSource: "dzi_c1.dzi"
+								}
+						]
+				});
+
+				// Switching channels
+				// From: https://codepen.io/iangilman/pen/YXRLea
+				var selectedCh = 0;
+
+				function fSwitchCh() {
+						selectedCh = (selectedCh + 1) % 2;
+						fade(viewer01.world.getItemAt(0), (selectedCh === 0 ? 1 : 0));
+						fade(viewer01.world.getItemAt(1), (selectedCh === 1 ? 1 : 0));
+				};
+
+				var fade = function(image, targetOpacity) {
+						var currentOpacity = image.getOpacity();
+						var step = (targetOpacity - currentOpacity) / 10;
+						if (step === 0) {
+								return;
+						}
+
+						var frame = function() {
+								currentOpacity += step;
+								if ((step > 0 && currentOpacity >= targetOpacity) || (step < 0 && currentOpacity <= targetOpacity)) {
+										image.setOpacity(targetOpacity);
+										return;
+								}
+
+								image.setOpacity(currentOpacity);
+								OpenSeadragon.requestAnimationFrame(frame);
+						};
+
+						OpenSeadragon.requestAnimationFrame(frame);
+				};
+
+				// Image filters
+
+				// Flags and settings of image filters; changed in UI
+				var selFilters = {
+						inv : 0,
+						bright : 0,
+						contr  : 1,
+						levMin : 0,
+						levMax : 255
+				}
+
+				// Switching inversion
+				function fSwitchInv() {
+
+						selFilters.inv = (selFilters.inv + 1) % 2;
+
+						fApplyFilters(selFilters)
+				};
+
+				// Brightness slider
+				var sliderBright = document.getElementById("slBright");
+				var outputBright = document.getElementById("valBright");
+				outputBright.innerHTML = sliderBright.value;
+
+				sliderBright.oninput = function() {
+					outputBright.innerHTML = this.value;
+					selFilters.bright = parseInt(this.value);
+
+					fApplyFilters(selFilters);
+				}
+
+				sliderBright.ondblclick = function() {
+					this.value = 0;
+					outputBright.innerHTML = 0;
+					selFilters.bright = 0;
+
+					fApplyFilters(selFilters);
+				}
+
+				// Contrast slider
+				var sliderContr = document.getElementById("slContr");
+				var outputContr = document.getElementById("valContr");
+				outputContr.innerHTML = sliderContr.value;
+
+				sliderContr.oninput = function() {
+					outputContr.innerHTML = this.value;
+					selFilters.contr = parseFloat(this.value);
+
+					fApplyFilters(selFilters);
+				}
+
+				sliderContr.ondblclick = function() {
+					this.value = 1;
+					outputContr.innerHTML = 1;
+					selFilters.contr = 1;
+
+					fApplyFilters(selFilters);
+				}
+
+				// Level min/max sliders
+				var sliderLevelMin = document.getElementById("slLevMin");
+				var outputLevelMin = document.getElementById("valLevMin");
+				outputLevelMin.innerHTML = sliderLevelMin.value;
+
+				sliderLevelMin.oninput = function() {
+					outputLevelMin.innerHTML = this.value;
+					selFilters.levMin = parseInt(this.value);
+
+					fApplyFilters(selFilters);
+				}
+
+				sliderLevelMin.ondblclick = function() {
+					this.value = 0;
+					outputLevelMin.innerHTML = 0;
+					selFilters.levMin = 0;
+
+					fApplyFilters(selFilters);
+				}
+
+				var sliderLevelMax = document.getElementById("slLevMax");
+				var outputLevelMax = document.getElementById("valLevMax");
+				outputLevelMax.innerHTML = sliderLevelMax.value;
+
+				sliderLevelMax.oninput = function() {
+					outputLevelMax.innerHTML = this.value;
+					selFilters.levMax = parseInt(this.value);
+
+					fApplyFilters(selFilters);
+				}
+
+				sliderLevelMax.ondblclick = function() {
+					this.value = 255;
+					outputLevelMax.innerHTML = 255;
+					selFilters.levMax = 255;
+
+					fApplyFilters(selFilters);
+				}
+
+				// Apply filters depending on values in inArg changed in UI
+				function fApplyFilters(inArg) {
+						var locFilters = [];
+
+						if (inArg.inv > 0) {
+								locFilters.push( OpenSeadragon.Filters.INVERT() )
+						}
+
+						if (inArg.bright != 0) {
+								locFilters.push( OpenSeadragon.Filters.BRIGHTNESS( inArg.bright ) )
+						}
+
+						if (inArg.contr != 1) {
+								locFilters.push( OpenSeadragon.Filters.CONTRAST( inArg.contr ) )
+						}
+
+						if (inArg.levMin > 0 || inArg.levMax < 255) {
+								locFilters.push( OpenSeadragon.Filters.LEVELS( inArg.levMin, inArg.levMax ) )
+						}
+
+						viewer01.setFilterOptions({
+								filters: {
+										processors: locFilters
+								},
+								loadMode: 'async'
+						})
+
+
+				}
+
+		</script>
+
+
+</body>
+</html>
