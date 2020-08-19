@@ -186,17 +186,18 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<script src="https://d3js.org/d3.v4.js"></script>
+	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+	<!-- OSD scripts -->
 	<script src="openseadragon/openseadragon.min.js"></script>
 	<script src="openseadragonfiltering/openseadragon-filtering.js"></script>
-	<script src="https://d3js.org/d3.v4.js"></script>
-	<!-- Load color palettes -->
-	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-	<script src="jscripts/heatmap.js"></script>
 	<script src="openseadragoncanvasoverlay/openseadragon-canvas-overlay.js"></script>
+
+	<!-- custom scripts -->
 	<script src="jscripts/d3-simple-slider.min.js"></script>
+	<script src="jscripts/heatmap.js"></script>
 	<script src="jscripts/overlay.js"></script>
-
-
 </head>
 
 <body onload="document.getElementById('defaultOpenTab').click();">
@@ -361,7 +362,7 @@
 		// Tab ch0
 		var viewer0 = OpenSeadragon({
 			id: "osd0",
-			prefixUrl: "../openseadragon/images/",
+			prefixUrl: "openseadragon/images/",
 			tileSources: [
 				"dzi_c0.dzi",
 			]
@@ -371,7 +372,7 @@
 		// Tab ch1
 		var viewer1 = OpenSeadragon({
 			id: "osd1",
-			prefixUrl: "../openseadragon/images/",
+			prefixUrl: "openseadragon/images/",
 			tileSources: [
 				"dzi_c1.dzi",
 			],
@@ -386,7 +387,7 @@
 		// Tab ch0+1
 		var viewer01 = OpenSeadragon({
 			id: "osd01",
-			prefixUrl: "../openseadragon/images/",
+			prefixUrl: "openseadragon/images/",
 			tileSources: [
 				{
 					opacity: 1,
@@ -558,8 +559,7 @@
 
 		}
 
-		//initializes the variables necessary for well highlighting
-
+		// Initialize variables necessary for well highlighting
 
 		// mapped to viewport coordinates and sorted arrays of Rows and Columns of the wells
 		var xOverlay = []
@@ -569,26 +569,27 @@
 		var above = []
 
 		//adds the canvas to a specified viewer
-
 		var overlay = viewer1.canvasOverlay({
 			onRedraw: function () {
 				overlay.context2d().fillStyle = "red";
 				//iterate over the wells that are above a treshold and draw red squares around them
 				for (var i = 0; i < above.length; i++) {
 					overlay.context2d().fillRect(xOverlay[above[i]], yOverlay[above[i]], maxWell, maxWell);
+
 					//empirical numbers that gave good appearance result as just drawing non-filled red squares was not working
 					overlay.context2d().clearRect(xOverlay[above[i]] + 0.035 * maxWell, yOverlay[above[i]] + 0.035 * maxWell, maxWell - 0.07 * maxWell, maxWell - 0.07 * maxWell);
 				}
 			},
 			clearBeforeRedraw: true
 		});
+
 		//resizes the overlay with respect to the current browser screen
 		$(window).resize(function () {
 			overlay.resize();
 		});
 
 
-		var data = "mock.csv"
+		var data = "mockData.csv"
 		var value = "CNfrac_akt.mn"
 
 		//generate heatmaps and color-scale gradients
@@ -598,10 +599,12 @@
 		drawScale("seq317", d3.interpolateSpectral)
 		drawScale("seq318", d3.interpolateSpectral)
 		drawScale("seq319", d3.interpolateSpectral)
+
 		//generate sliders used to control specific heatmaps and wells at the given tab as well as the sliders to control the data range with respect to colors
 		createSlider(viewer1, "slider-simple", data, value, "my_dataviz", "slider-range")
 		createSlider(viewer1, "slider-simple2", data, "npi", "my_dataviz2", "slider-range2")
 		createSlider(viewer1, "slider-simple3", data, "zscore", "my_dataviz3", "slider-range3")
+
 		//set up buttons to clear wells and heatmap
 		clearView("overlay", "my_dataviz")
 		clearView("overlay2", "my_dataviz2")
