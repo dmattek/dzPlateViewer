@@ -515,7 +515,7 @@ def processWell(inRow, inCol):
                 print("Either the file is missing or not readable; creating blank")
 
             # create an empty file
-            locIm8fin = Image.new(imMode, (imHeight, imWidth), bgEmptyFOV)
+            locIm8fin = Image.new(imMode, (imWidth, imHeight), bgEmptyFOV)
             locImDraw = ImageDraw.Draw(locIm8fin)
 
             locMyLabel = "f%02d missing" % locIfov
