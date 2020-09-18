@@ -471,7 +471,7 @@ def processWell(inRow, inCol):
         # Add image to montage canvas
 
         locWellCol = locIfov % wellWidth
-        locWellRow = locIfov // wellHeight
+        locWellRow = locIfov // wellWidth
 
         locWellPosW = locWellCol * (imWidth + paddingFOV)
         locWellPosE = locWellPosW + imWidth

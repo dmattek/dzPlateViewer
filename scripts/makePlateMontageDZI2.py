@@ -275,7 +275,7 @@ class ImageCreator(object):
         Parallel(n_jobs=cores,backend="threading")(delayed(self.create_helper2)(level)
                            for level in range(self.descriptor.num_levels-3)) # last 2-3 levels are heavily dominated by the io procedures
         # iterate over the last few levels and parallelize the cropping
-        with Parallel(n_jobs=6,backend="threading") as parallel: #by trial and error 6threads gave the optimal spead for cropping 
+        with Parallel(n_jobs=6,backend="threading") as parallel: #by trial and error 6threads gave the optimal spead for cropping
             for level in range(self.descriptor.num_levels-3, self.descriptor.num_levels):
                 if (DEB):
                     print("Pyramid level %d" % level)
@@ -526,7 +526,7 @@ def processWell(inRow, inCol):
         # Add image to montage canvas
 
         locWellCol = locIfov % wellWidth
-        locWellRow = locIfov // wellHeight
+        locWellRow = locIfov // wellWidth
 
         locWellPosW = locWellCol * (imWidth + paddingFOV)
         locWellPosE = locWellPosW + imWidth
