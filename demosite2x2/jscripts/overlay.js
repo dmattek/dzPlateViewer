@@ -1,34 +1,17 @@
-/*
-*This module is based on D3.js and was created for the purpose of creating
-*sliders for interacting with the heatmap associated with dzi images of plates with melanoma cells
-and the wells within the plate images.
-*Key features are:
-*creating a slider that will mark specific heatmap fields and create rectangles on the border of wells that have a value above the current slider value
-* creating a range slider that will clip the color generating range of the heatmap to the values specified by the slider
-* All slider values are generated from the same csv file used to generate the heatmaps heatm associated with it
-*Main source for generating sliders:
-*https://bl.ocks.org/johnwalley/e1d256b81e51da68f7feb632a53c3518
-
-/**
- *
- * @author Milos Drobnjakovic
- * affiliated with the University of Bern
- */
-
 
 //mapping columns and rows to starting points of their respective wells expressed in viewport coordinates
-function mapToIntOverlay2(labels) {
+function mapToIntOverlay2(labels,d) {
   var num = 0;
   var mapping = {};
   for (var i = 0; i < labels.length; i++) {
     let l = labels[i]
     mapping[l] = num;
-    num += window.maxWell;
+    num += viewer12.viewport.imageToViewportCoordinates(d/labels.length).x
   }
   return mapping
 }
 
-function createSlider(viewer, id, df, value, heatm, id2) {
+function createSlider(viewer, id, df, value, heatm, id2, vnumber) {
   //read in the heatmap data
   d3.csv(df, function (data) {
     var myGroups = d3.map(data, function (d) { return d.Col; }).keys();
@@ -37,31 +20,56 @@ function createSlider(viewer, id, df, value, heatm, id2) {
     myGroups.sort(function (a, b) { return Number(a) - Number(b) })
     myVars.sort()
     // create a mapping of rows and columns
-    xOverlayMap = mapToIntOverlay2(myGroups);
-    yOverlayMap = mapToIntOverlay2(myVars);
+    xOverlayMap = mapToIntOverlay2(myGroups,window.dim.x);
+    yOverlayMap = mapToIntOverlay2(myVars,window.dim.y);
     // create arrays of rows and columns and values
     var valz = []
-    window.yOverlay = []
-    window.xOverlay = []
+    // vnumber specifies to which viewer the rectangles are bound
+    if (vnumber == 1) {
+      window.yOverlay1 = []
+      window.xOverlay1 = []
+    }
+
+    else {
+      window.yOverlay2 = []
+      window.xOverlay2 = []
+    }
+
+
     data.map(function (d) {
       valz.push(d[value])
-      window.yOverlay.push(d.Row)
-      window.xOverlay.push(d.Col)
+      if (vnumber == 1) {
+        window.yOverlay1.push(d.Row)
+        window.xOverlay1.push(d.Col)
+      }
+      else {
+        window.yOverlay2.push(d.Row)
+        window.xOverlay2.push(d.Col)
+      }
     })
     // values are mapped numerically
     var valz = valz.map(Number)
     window.currentLength = above.length
     // map all the columns and rows in array order to the starting coordinates of their respected wells
-    for (var i = 0; i < window.yOverlay.length; i++) {
-      window.yOverlay[i] = yOverlayMap[window.yOverlay[i]]
+    if (vnumber == 1) {
+      for (var i = 0; i < window.yOverlay1.length; i++) {
+        window.yOverlay1[i] = yOverlayMap[window.yOverlay1[i]]
+      }
+
+      for (var i = 0; i < window.xOverlay1.length; i++) {
+        window.xOverlay1[i] = xOverlayMap[window.xOverlay1[i]]
+      }
+    }
+    else {
+      for (var i = 0; i < window.yOverlay2.length; i++) {
+        window.yOverlay2[i] = yOverlayMap[window.yOverlay2[i]]
+      }
+
+      for (var i = 0; i < window.xOverlay2.length; i++) {
+        window.xOverlay2[i] = xOverlayMap[window.xOverlay2[i]]
+      }
     }
 
-    for (var i = 0; i < window.xOverlay.length; i++) {
-      window.xOverlay[i] = xOverlayMap[window.xOverlay[i]]
-    }
-
-
-    //create a slider to highlight wells/mark heatmap based on the slider value
     var sliderSimple = d3
       .sliderBottom()
       .min(d3.min(valz))
@@ -74,7 +82,7 @@ function createSlider(viewer, id, df, value, heatm, id2) {
         // based on the slider treshold determine which wells should be highlighted based on their values
         window.above = []
         for (var i = 0; i < valz.length; i++) {
-          if (valz[i] > val) {
+          if (valz[i] < val) {
             window.above.push(i)
           }
         }
@@ -88,7 +96,7 @@ function createSlider(viewer, id, df, value, heatm, id2) {
         window.currentLength = newL
         // draw circles in the heatmap where the values exceed the slider treshold
         d3.select("#" + heatm).select("svg").selectAll("circle").each(function (d) {
-          if (d > val) {
+          if (d < val) {
             d3.select(this).
               attr("r", 2)
           }
@@ -98,7 +106,7 @@ function createSlider(viewer, id, df, value, heatm, id2) {
           }
         })
       });
-    //create a svg element and add  slider for well highlighting to it
+    //create a svg element and add a slider to it
     var gSimple = d3
       .select("#" + id)
       .append('svg')
@@ -139,7 +147,6 @@ function createSlider(viewer, id, df, value, heatm, id2) {
         })
 
       });
-    //create a svg element and add  sliderRange to it
 
     var gRange = d3
       .select('div#' + id2)
@@ -156,3 +163,5 @@ function createSlider(viewer, id, df, value, heatm, id2) {
   });
 
 }
+
+
