@@ -81,6 +81,9 @@ IMAGE_FORMATS = {
     "png": "png",
 }
 
+# Path to the font file; required for adding overlay labels
+script_dir = os.path.dirname(os.path.abspath(__file__))
+font_path = os.path.join(script_dir,'fonts/arial.ttf')
 
 class DeepZoomImageDescriptor(object):
     def __init__(
@@ -582,8 +585,8 @@ if __name__ == "__main__":
         bgEmptyWell = imDepthOut # color of empty canvas for well montage
         bgEmptyPlate = imDepthOut # color of empty canvas for plate montage
 
-    myFontFOV = ImageFont.truetype(font='fonts/arial.ttf', size=200)
-    myFontWell= ImageFont.truetype(font='fonts/arial.ttf', size=300)
+    myFontFOV = ImageFont.truetype(font=font_path, size=200)
+    myFontWell= ImageFont.truetype(font=font_path, size=300)
 
 
     # Work
