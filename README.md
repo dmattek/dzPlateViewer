@@ -2,7 +2,7 @@
 
 An html-based plate viewer for microscopy images using [DeepZoom](https://en.wikipedia.org/wiki/Deep_Zoom) technology.
 
-![demo](screencast/dzPlateViewer03.gif)
+https://user-images.githubusercontent.com/25979488/135925752-0fa829a3-bd39-445d-9682-151ebce71d20.mp4
 
 ## Big demo
 
