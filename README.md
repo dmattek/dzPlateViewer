@@ -4,11 +4,11 @@ An html-based plate viewer for microscopy images using [DeepZoom](https://en.wik
 
 ## Big demo
 
-A demo web-viewer of a **6 gigapixel** image montage created out of 12'300 1024x1024 pixel images.
+A [demo](http://macdobry.net/deepzoomdemo/demoscreen/index.html) web-viewer of a **6 gigapixel** image montage created out of 12'300 1024x1024 pixel images.
 
-The montage is an excerpt from a project between [Pertz Lab](https://www.pertzlab.net) at University of Bern and the [Department of Pharmaceutical Sciences](https://pharma.unibas.ch/en/persons/eliane-garo/) at the University of Basel. We aim to find compounds that inhibit cell proliferation, one of the [hallmarks of cancer](https://en.wikipedia.org/wiki/The_Hallmarks_of_Cancer).
+The montage is an excerpt from a project between [Pertz Lab](https://www.pertzlab.net) at the University of Bern and the [Department of Pharmaceutical Sciences](https://pharma.unibas.ch/en/persons/eliane-garo/) at the University of Basel. We are looking for compounds that inhibit cell proliferation, one of the [hallmarks of cancer](https://en.wikipedia.org/wiki/The_Hallmarks_of_Cancer).
 
-The images depict melanoma cells treated with various plant-derived compounds. The cells contain 3 fluorescent [biosensors](https://en.wikipedia.org/wiki/Biosensor) which emit light in their respective wavelengths when illuminated with specific light frequency. One of the biosensors helps to locate cells and perform automatic [image segmentation](https://en.wikipedia.org/wiki/Image_segmentation). The other two biosensors sense and measure the activity of two important proteins, [ERK](https://en.wikipedia.org/wiki/Extracellular_signal-regulated_kinases) and [Akt](https://en.wikipedia.org/wiki/Protein_kinase_B), involved in cell proliferation. If a drug-candidate compound stops cell proliferation, we observe changes in biosensor fluorescence, which we can image and analyse.
+The images depict melanoma cells treated with various plant-derived compounds. The cells contain 3 fluorescent [biosensors](https://en.wikipedia.org/wiki/Biosensor) that emit light in their respective wavelengths when illuminated with a specific light frequency. One of the biosensors is used to locate the cells and to perform automatic [image segmentation](https://en.wikipedia.org/wiki/Image_segmentation). The other two biosensors sense and measure the activity of two important proteins, [ERK](https://en.wikipedia.org/wiki/Extracellular_signal-regulated_kinases) and [Akt](https://en.wikipedia.org/wiki/Protein_kinase_B), involved in cell proliferation. If a drug-candidate compound stops cell proliferation, we observe changes in biosensor fluorescence, which we can image and analyse.
 
 The experiment is performed in a 384-well plate format, where each well contains cells subject to a different treatment. A camera mounted on a microscope takes the images (1024x1024 pixels) at 3 different wavelengths (3 channels) in 16 locations of a well (4x4 fields of view), and repeats the process for all 384 wells (24x16 wells).
 
@@ -16,7 +16,7 @@ The [demo](http://macdobry.net/deepzoomdemo/demoscreen/index.html) shows the res
 
 ## Small demo
 
-A demo web-viewer with only 2x2 wells, 4x4 FOVs per well can be accessed [here](http://macdobry.net/deepzoomdemo/demosite2x2/index.html).
+A [demo](http://macdobry.net/deepzoomdemo/demosite2x2/index.html) web-viewer with 2x2 wells, 4x4 FOVs per well.
 
 A `zip` archive with a dataset used to produce that demo can be downloaded from [here](https://www.dropbox.com/s/5cmejgy9x21434n/demodata2x2.zip?dl=0).
 
@@ -46,7 +46,7 @@ An OpenSeadragon plugin with image filters.
 * `demosite2x2/openseadragoncanvasoverlay`\
 An OpenSeadragon plugin for adding canvas overlay to OSD images.
 * `jscripts`\
-JavaScript files used for creating sliders and interactive heatmaps based on CSV data.
+JavaScript files used to create sliders and interactive heatmaps based on CSV data.
 
 ## Usage
 
