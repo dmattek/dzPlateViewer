@@ -2,6 +2,8 @@
 
 An html-based plate viewer for microscopy images using [DeepZoom](https://en.wikipedia.org/wiki/Deep_Zoom) technology.
 
+<video src='screencast/dzPlateViewer02.mp4' width=360/>
+
 ## Big demo
 
 A [demo](http://macdobry.net/deepzoomdemo/demoscreen/index.html) web-viewer of a **6 gigapixel** image montage created out of 12'300 1024x1024 pixel images.
