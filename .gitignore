@@ -1,2 +1,7 @@
 # ignore macOS meta
 .DS_Store
+
+# images
+*.TIFF
+*.png
+*.dzi

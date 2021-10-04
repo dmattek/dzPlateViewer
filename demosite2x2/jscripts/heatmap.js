@@ -1,24 +1,3 @@
-/*
-*This module is based on D3.js and was created for the purpose of creating 
-*interactive heatmaps that contain the data connected with dzi images of plates with melanoma cells.
-*Key features are: 
-* creating a heatmap from a specified csv dataset
-* zooming to a well on the dzi image that corresponds to a specific field selected on the heatmap
-* displaying the actual measurment value when hovering over a field in the heatmap
-* creating a color gradient that corresponds to colors in the heatmap
-*Main source for the heatmap code:
-*https://www.d3-graph-gallery.com/graph/heatmap_style.html
-*Main source for creating the gradient:
-*http://using-d3js.com/04_05_sequential_scales.html
- */
-
-/**
- * @author Milos Drobnjakovic
- * affiliated with the University of Bern
- */
-
-
-
 // function that maps Rows and Columns to middle points of their respective wells
 function mapToInt(labels) {
   var num = 1;
@@ -37,8 +16,8 @@ function color(maxx, minn) {
     .interpolator(d3.interpolateSpectral)
     .domain([maxx, minn]) //theese are flipped around because the color scale available in d3 is the inverse of what is needed
 }
-
-function createHeatmap(viewer, id, df, value) {
+//hm is an optional parameter that defines if a heatmap is built or if a guidancemap is needed instead
+function createHeatmap(viewer, id, df, value, hm = true) {
   // set the dimensions and margins of the graph
   var margin = { top: 20, right: 25, bottom: 30, left: 30 },
     width = 500;
@@ -68,16 +47,8 @@ function createHeatmap(viewer, id, df, value) {
     var mapY = mapToInt(myVars);
     // reverse the vars order to match the general plate order
     var myVars = myVars.reverse()
-    // find the minimum dimension of the plate as well as the inverse of the maximum dimension
+    // find the minimum dimension of the plate 
     window.minDim = Math.min(myVars.length, myGroups.length)
-    window.maxWell = 1 / Math.max(myVars.length, myGroups.length) // inverse is taken directly as its needed as such in further calculations
-
-    // convert the target values to Numerical data type
-    var valz = []
-    data.map(function (d) {
-      valz.push(d[value])
-    })
-    var valz = valz.map(Number)
 
     // Build X scales and axis:
     var x = d3.scaleBand()
@@ -100,45 +71,9 @@ function createHeatmap(viewer, id, df, value) {
       .call(d3.axisLeft(y).tickSize(0))
       .select(".domain").remove()
 
-    // Build color scale
-    var myColor = color(d3.max(valz), d3.min(valz))
-
-
-    // create a tooltip
-    var tooltip = d3.select("#" + id)
-      .append("div")
-      .style("opacity", 0)
-      .attr("class", "tooltip")
-      .style("background-color", "white")
-      .style("border", "solid")
-      .style("border-width", "2px")
-      .style("border-radius", "5px")
-      .style("padding", "5px")
-
-    // Three function that change the tooltip when user hover / move / leave a cell
-    var mouseover = function (d) {
-      tooltip
-        .style("opacity", 1)
-      d3.select(this)
-        .style("stroke", "black")
-        .style("opacity", 1)
-    }
-    var mousemove = function (d) {
-      tooltip
-        .html("The exact value of<br>this cell is: " + d[2])
-        .style("left", (d3.mouse(this)[0] + 70) + "px")
-        .style("top", (d3.mouse(this)[1]) + "px")
-    }
-    var mouseleave = function (d) {
-      tooltip
-        .style("opacity", 0)
-      d3.select(this)
-        .style("stroke", "none")
-        .style("opacity", 0.8)
-    }
     var click = function (d) {
       // reset before every zoom to default starting positions so that coordinats are properly synced
-      viewer1.viewport.goHome(true)
+      viewer.viewport.goHome(true)
       var cl = d[0];
       var rw = d[1];
       //select a point to zoom to and convert it from pixelCoordinates to Viewport
@@ -149,38 +84,127 @@ function createHeatmap(viewer, id, df, value) {
 
     }
 
-    // add the squares
-    svg.selectAll()
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("x", function (d) { return x(d.Col) })
-      .attr("y", function (d) { return y(d.Row) })
-      .attr("rx", 4)
-      .attr("ry", 4)
-      .attr("width", x.bandwidth())
-      .attr("height", y.bandwidth())
-      .style("fill", function (d) { return myColor(d[value]) })
-      .style("stroke-width", 4)
-      .style("stroke", "none")
-      .style("opacity", 0.8)
-      .on("mouseover", mouseover)
-      .on("mousemove", mousemove)
-      .on("mouseleave", mouseleave)
-      .on("click", click)
-      .datum(function (d) { return [d.Col, d.Row, d[value]] })  //binds the actual data to individual squares important for color changes
+    //data dependent part only used when heatmap is built
+    if (hm) {
+      window.maxWell = 1 / Math.max(myVars.length, myGroups.length) // inverse is taken directly as its needed as such in further calculations
+      window.Height = viewer.viewport.imageToViewportCoordinates(window.dim.x / (myGroups.length)).x
+      window.Width = viewer.viewport.imageToViewportCoordinates(window.dim.y / (myVars.length)).x
+      // convert the target values to Numerical data type
+      var valz = []
+      data.map(function (d) {
+        valz.push(d[value])
+      })
+      var valz = valz.map(Number)
 
 
-    // add the circles that are adjusted based on the slider treshold
-    svg.selectAll("circle")
-      .data(data)
-      .enter()
-      .append("circle")
-      .attr("cx", function (d) { return x(d.Col) + x.bandwidth() / 2 }) //makes sure squares are in the center
-      .attr("cy", function (d) { return y(d.Row) + y.bandwidth() / 2 })
-      .attr("r", 0)
-      .style("fill", "black")
-      .datum(function (d) { return d[value] }) // save the value of the specified data to the given circle
+
+      // Build color scale
+      var myColor = color(d3.max(valz), d3.min(valz))
+
+
+      // create a tooltip
+      var tooltip = d3.select("#" + id)
+        .append("div")
+        .style("opacity", 0)
+        .attr("class", "tooltip")
+        .style("background-color", "white")
+        .style("border", "solid")
+        .style("border-width", "2px")
+        .style("border-radius", "5px")
+        .style("padding", "5px")
+
+      // Three function that change the tooltip when user hover / move / leave a cell
+      var mouseover = function (d) {
+        tooltip
+          .style("opacity", 1)
+        d3.select(this)
+          .style("stroke", "black")
+          .style("opacity", 1)
+      }
+      var mousemove = function (d) {
+        tooltip
+          .html("The exact value of<br>this cell is: " + d[2])
+          .style("left", (d3.mouse(this)[0] + 70) + "px")
+          .style("top", (d3.mouse(this)[1]) + "px")
+      }
+      var mouseleave = function (d) {
+        tooltip
+          .style("opacity", 0)
+        d3.select(this)
+          .style("stroke", "none")
+          .style("opacity", 0.8)
+      }
+
+
+      // add the squares
+      svg.selectAll()
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", function (d) { return x(d.Col) })
+        .attr("y", function (d) { return y(d.Row) })
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("fill", function (d) { return myColor(d[value]) })
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+        .on("mouseover", mouseover)
+        .on("mousemove", mousemove)
+        .on("mouseleave", mouseleave)
+        .on("click", click)
+        .datum(function (d) { return [d.Col, d.Row, d[value]] })  //binds the actual data to individual squares important for color changes
+
+
+      // add the circles that are adjusted based on the slider treshold
+      svg.selectAll("circle")
+        .data(data)
+        .enter()
+        .append("circle")
+        .attr("cx", function (d) { return x(d.Col) + x.bandwidth() / 2 })
+        .attr("cy", function (d) { return y(d.Row) + y.bandwidth() / 2 })
+        .attr("r", 0)
+        .style("fill", "black")
+        .datum(function (d) { return d[value] }) // save the value of the specified data to the given circle
+    }
+    else {
+      data = d3.cross(myGroups,myVars)
+      // Two functions that change the tooltip when user hover/leave a cell
+      var mouseover = function (d) {
+        d3.select(this)
+          .style("stroke", "black")
+          .style("opacity", 1)
+      }
+      var mouseleave = function (d) {
+        d3.select(this)
+          .style("stroke", "none")
+          .style("opacity", 0.8)
+      }
+
+      // add the squares
+      svg.selectAll()
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", function (d) { return x(d[0]) })
+        .attr("y", function (d) { return y(d[1]) })
+        .attr("rx", 4)
+        .attr("ry", 4)
+        .attr("width", x.bandwidth())
+        .attr("height", y.bandwidth())
+        .style("fill", "orange")
+        .style("stroke-width", 4)
+        .style("stroke", "none")
+        .style("opacity", 0.8)
+        .on("mouseover", mouseover)
+        .on("mouseleave", mouseleave)
+        .on("click", click)
+        .datum(function (d) { return [d[0], d[1]] })  //binds the actual data to individual squares important for color changes
+
+
+    }
   })
 
 }

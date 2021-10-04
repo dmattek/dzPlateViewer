@@ -250,7 +250,7 @@ class ImageCreator(object):
                 png_compress = round((1 - self.image_quality)*10)
                 tile.save(tile_file, compress_level=png_compress)
 
-    def create(self, source, destination,cores):
+    def create(self, source, destination, cores):
         """Creates Deep Zoom image from source file and saves it to destination."""
 
         # Open the source image for DZI tiling from a file
@@ -272,8 +272,9 @@ class ImageCreator(object):
         # Create tiles
         self.image_files = _get_or_create_path(_get_files_path(destination))
         # create a list of levels to put in as argument for multithreading
-        Parallel(n_jobs=cores,backend="threading")(delayed(self.create_helper2)(level)
+        Parallel(n_jobs=cores, backend="threading")(delayed(self.create_helper2)(level)
                            for level in range(self.descriptor.num_levels-3)) # last 2-3 levels are heavily dominated by the io procedures
+
         # iterate over the last few levels and parallelize the cropping
         with Parallel(n_jobs=6,backend="threading") as parallel: #by trial and error 6threads gave the optimal spead for cropping
             for level in range(self.descriptor.num_levels-3, self.descriptor.num_levels):
@@ -677,8 +678,11 @@ if __name__ == "__main__":
         image_quality=args.imquality,
         resize_filter=None,
     )
+
     start = time.time()
-    creator.create(imPlate, imPathDir,cores)
-    print("Execution time of the creator function is:", time.time()-start)
+    creator.create(imPlate, imPathDir, nCores)
+    if (DEB):
+        print("\nExecution time of the creator function is: %.2f\n" % time.time()-start)
+
     if(DEB):
         print("\nAnalysis finished!\n")

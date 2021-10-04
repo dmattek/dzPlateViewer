@@ -1,0 +1,5 @@
+Row,Col,meas.mn,npi,zscore,well.type
+A,1,1.11507,1.05724,1.2,neg
+A,2,0.616521,0.0275343,-1,pos
+B,1,1.10438,0.82,0.5,compound
+B,2,0.851256,0.56,0.3,compound

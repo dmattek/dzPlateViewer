@@ -2,6 +2,7 @@
 
 <title>XXXXX</title>
 
+
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -180,7 +181,57 @@
 			height: 100%;
 		}
 
+		.switch-button {
+			width: 200px;
+			height: 30px;
+			text-align: center;
+			position: absolute;
+			background: #f1f1f1;
+			left: 2%;
+			top: 1%;
+			z-index: 197 !important;
+			cursor: pointer;
+			transition: 0.3s ease all;
+			border: 1px solid #d2d2d2;
+		}
 
+		.switch-button-case {
+			display: inline-block;
+			background: none;
+			width: 49%;
+			height: 100%;
+			color: #cccccc;
+			position: relative;
+			border: none;
+			transition: 0.3s ease all;
+			text-transform: uppercase;
+			letter-spacing: 5px;
+			padding-bottom: 1px;
+		}
+
+		.switch-button-case:hover {
+			color: grey;
+			cursor: pointer;
+		}
+
+		.switch-button-case:focus {
+			outline: none;
+		}
+
+		.switch-button .active {
+			color: #cccccc;
+			background-color: #cccccc;
+			position: absolute;
+			top: 0;
+			width: 50%;
+			height: 100%;
+			z-index: -1;
+			transition: 0.3s ease-out all;
+		}
+
+		.switch-button .active-case {
+			color: #151515;
+		}
 	</style>
 
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -188,109 +239,147 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 	<script src="https://d3js.org/d3.v4.js"></script>
 	<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-
-	<!-- OSD scripts -->
 	<script src="openseadragon/openseadragon.min.js"></script>
 	<script src="openseadragonfiltering/openseadragon-filtering.js"></script>
 	<script src="openseadragoncanvasoverlay/openseadragon-canvas-overlay.js"></script>
-
-	<!-- custom scripts -->
-	<script src="jscripts/d3-simple-slider.min.js"></script>
 	<script src="jscripts/heatmap.js"></script>
+	<script src="jscripts/d3-simple-slider.min.js"></script>
 	<script src="jscripts/overlay.js"></script>
+	<script src="jscripts/boxplot.js"></script>
+
+
 </head>
 
-<body onload="document.getElementById('defaultOpenTab').click();">
+<body onload="document.getElementById('Tab12').click();">
 
 	<h2>Plate XXXXX</h2>
 
+
 	<!-- Tab links -->
 	<div class="tab">
-		<button class="tablinks active" onclick="openTab(event, 'tabch0',0)" id="defaultOpenTab">Ch 0</button>
-		<button class="tablinks" onclick="openTab(event, 'tabch1',0)" id="Tab1">Ch 1</button>
-		<button class="tablinks" onclick="openTab(event, 'tabch01',0)">Ch 0+1</button>
+		<button class="tablinks active" onclick="openTab(event, 'tabch12',0)" id="Tab12">Ch 0+1</button>
 		<button onclick="window.location.href = 'index.html';">Back to index</button>
 	</div>
 
 	<!-- Tab content -->
 
-	<div id="tabch0" class="tabcontent">
+	<div id="tabch12" class="tabcontent">
 
 		<div class="col-md-8">
-			<div class="osd" id="osd0"></div>
+			<div class="osd" id="osd12"></div>
 		</div>
 
 		<div class="col-md-4">
+			<div class="switch-button">
+				<span class="active" style="left: 50%"></span>
+				<button	class="switch-button-case left">Nuc</button><button class="switch-button-case right active-case">Kinase</button>
+			</div>
 			<br>
-			<p>Placeholder for additional content</p>
-		</div>
 
-	</div>
-	<div id="tabch1" class="tabcontent">
-
-		<div class="col-md-8">
-			<div class="osd" id="osd1"></div>
-		</div>
-
-		<div class="col-md-4">
-			<div class="tab">
-				<button class="tablinks active" onclick="openTab(event, 'tabInt',2)" id="default1">Int</button>
-				<button class="tablinks" onclick="openTab(event, 'tabNPI',2)">NPI</button>
-				<button class="tablinks" onclick="openTab(event, 'tabZscore',2)">Zscore</button>
-			</div>
-			<div id="tabInt" class="tabcontent">
-				<div class="col-md-12">
-					<br>
-					<svg id="seq317" width="300" height="40">
-					</svg>
-					<div id="slider-range"></div>
-					<div id="my_dataviz"></div>
-					<button id="overlay">Clear overlay</button>
-					<div id="slider-simple"></div>
-				</div>
-			</div>
-			<div id="tabNPI" class="tabcontent">
-				<div class="col-md-12">
-					<br>
-					<svg id="seq318" width="300" height="40">
-					</svg>
-					<div id="slider-range2"></div>
-					<div id="my_dataviz2"></div>
-					<button id="overlay2">Clear overlay</button>
-					<div id="slider-simple2"></div>
-
-				</div>
-			</div>
-			<div id="tabZscore" class="tabcontent">
-				<div class="col-md-12">
-					<br>
-					<svg id="seq319" width="300" height="40">
-					</svg>
-					<div id="slider-range3"></div>
-					<div id="my_dataviz3"></div>
-					<button id="overlay3">Clear overlay</button>
-					<div id="slider-simple3"></div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<div id="tabch01" class="tabcontent">
-
-		<div class="col-md-10">
-			<div class="osd" id="osd01"></div>
-		</div>
-
-		<div class="col-md-2">
-			<label class="switch">
-				<input type="checkbox" id="chbCh" onclick=fSwitchCh()>
-				<div class="slider">
-					<span class="on">Ch0</span>
-					<span class="off">Ch1</span>
-				</div>
-			</label>
 			<br>
+			<br>
+
+			<div id="chd1" style="display: none;">
+				<div class="tab">
+					<button class="tablinks active" onclick="openTab(event, 'tabInt',2)" id="default1">Int</button>
+					<button class="tablinks" onclick="openTab(event, 'tabNPI',2)">NPI</button>
+					<button class="tablinks" onclick="openTab(event, 'tabZscore',2)">Zscore</button>
+					<button class="tablinks" onclick="openTab(event, 'QCt',2)">QC</button>
+				</div>
+				<div id="tabInt" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq317" width="300" height="40">
+						</svg>
+						<div id="slider-range"></div>
+						<div id="my_dataviz1"></div>
+						<button id="overlay1">Clear overlay</button>
+						<div id="slider-simple"></div>
+					</div>
+				</div>
+				<div id="tabNPI" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq318" width="300" height="40">
+						</svg>
+						<div id="slider-range2"></div>
+						<div id="my_dataviz2"></div>
+						<button id="overlay2">Clear overlay</button>
+						<div id="slider-simple2"></div>
+
+					</div>
+				</div>
+				<div id="tabZscore" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq319" width="300" height="40">
+						</svg>
+						<div id="slider-range3"></div>
+						<div id="my_dataviz3"></div>
+						<button id="overlay3">Clear overlay</button>
+						<div id="slider-simple3"></div>
+					</div>
+				</div>
+				<div id="QCt" class="tabcontent">
+					<div class="col-md-12">
+						<div id="QC1"></div>
+					</div>
+				</div>
+			</div>
+
+			<div id="chd2" style="display: block;">
+				<div class="tab">
+					<button class="tablinks active" onclick="openTab(event, 'tabInt2',2)" id="default2">Int</button>
+					<button class="tablinks" onclick="openTab(event, 'tabNPI2',2)">NPI</button>
+					<button class="tablinks" onclick="openTab(event, 'tabZscore2',2)">Zscore</button>
+					<button class="tablinks" onclick="openTab(event, 'QCt2',2)">QC</button>
+
+				</div>
+				<div id="tabInt2" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq320" width="300" height="40">
+						</svg>
+						<div id="slider-range4"></div>
+						<div id="my_dataviz4"></div>
+						<button id="overlay4">Clear overlay</button>
+						<div id="slider-simple4"></div>
+					</div>
+				</div>
+				<div id="tabNPI2" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq321" width="300" height="40">
+						</svg>
+						<div id="slider-range5"></div>
+						<div id="my_dataviz5"></div>
+						<button id="overlay5">Clear overlay</button>
+						<div id="slider-simple5"></div>
+					</div>
+				</div>
+				<div id="tabZscore2" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq322" width="300" height="40">
+						</svg>
+						<div id="slider-range6"></div>
+						<div id="my_dataviz6"></div>
+						<button id="overlay6">Clear overlay</button>
+						<div id="slider-simple6"></div>
+					</div>
+				</div>
+				<div id="QCt2" class="tabcontent">
+					<div class="col-md-12">
+						<div id="QC2"></div>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="info" id="locator" style="float: right; width: 150px;"></div>
+
 			<label class="switch">
-				<input type="checkbox" id="chbInv" onclick=fSwitchInv()>
+				<input type="checkbox" id="chbInv12" onclick=fSwitchInv(viewer12,selFilters12)>
 				<div class="slider">
 					<span class="on">Inv</span>
 					<span class="off">Orig</span>
@@ -299,23 +388,23 @@
 			<br>
 			<br>
 			<div class="slidecontainer">
-				<input type="range" min="-100" max="100" value="0" class="sliderlong" id="slBright">
-				<p>Brightness: <span id="valBright"></span></p>
+				<input type="range" min="-100" max="100" value="0" class="sliderlong" id="slBright12">
+				<p>Brightness: <span id="valBright12"></span></p>
 			</div>
 			<br>
 			<div class="slidecontainer">
-				<input type="range" min="0" max="4" value="1" step="0.1" class="sliderlong" id="slContr">
-				<p>Contrast: <span id="valContr"></span></p>
+				<input type="range" min="0" max="4" value="1" step="0.1" class="sliderlong" id="slContr12">
+				<p>Contrast: <span id="valContr12"></span></p>
 			</div>
 			<br>
 			<div class="slidecontainer">
-				<input type="range" min="0" max="255" value="0" step="1" class="sliderlong" id="slLevMin">
-				<p>Level min: <span id="valLevMin"></span></p>
+				<input type="range" min="0" max="255" value="0" step="1" class="sliderlong" id="slLevMin12">
+				<p>Level min: <span id="valLevMin12"></span></p>
 			</div>
 			<br>
 			<div class="slidecontainer">
-				<input type="range" min="0" max="255" value="255" step="1" class="sliderlong" id="slLevMax">
-				<p>Level max: <span id="valLevMax"></span></p>
+				<input type="range" min="0" max="255" value="255" step="1" class="sliderlong" id="slLevMax12">
+				<p>Level max: <span id="valLevMax12"></span></p>
 			</div>
 
 		</div>
@@ -325,10 +414,11 @@
 
 	<script>
 
-		// opens the default heatmap tab when switching to a given tab
-		document.getElementById("Tab1").addEventListener('click', function () {
-			document.getElementById("default1").click();
+		// opens the default heatmap tab when switching to a given tab and clears the highlighed wells
+		document.getElementById("Tab12").addEventListener('click', function () {
+			document.getElementById("default" + channel).click();
 		})
+
 
 		// opens the tabs specified in the upper html, with the variable j specifying from which tab the changes to the current setup start
 		function openTab(evt, tabName, j) {
@@ -350,65 +440,86 @@
 
 
 		// clearing well highlights and heatmap marks of a specific tab
-		function clearView(id, id2) {
+		function clearView(id, id2, viewer) {
 			document.getElementById(id).addEventListener('click', function () {
 				window.above = []; //reset the highlighted wells
-				viewer1.raiseEvent('update-viewport');
+				viewer.raiseEvent('update-viewport');
 				// reset the heatmap circles
 				d3.select("#" + id2).select("svg").selectAll("circle").attr("r", 0)
 			});
 		}
 
-		// Tab ch0
-		var viewer0 = OpenSeadragon({
-			id: "osd0",
-			prefixUrl: "openseadragon/images/",
-			tileSources: [
-				"dzi_c0.dzi",
-			]
-		});
-
-
-		// Tab ch1
-		var viewer1 = OpenSeadragon({
-			id: "osd1",
-			prefixUrl: "openseadragon/images/",
-			tileSources: [
-				"dzi_c1.dzi",
-			],
-
-		});
-
-		viewer0.addHandler("open", function () {
-			console.log("loaded")
-			window.dim = viewer0.world.getItemAt(0).getContentSize();
-		})
-
-		// Tab ch0+1
-		var viewer01 = OpenSeadragon({
-			id: "osd01",
+		// gets the image dimension in pixels so that it can be converted to viewport coordinates in the heatmap
+		// Tab ch1+2
+		var viewer12 = OpenSeadragon({
+			id: "osd12",
 			prefixUrl: "openseadragon/images/",
 			tileSources: [
 				{
-					opacity: 1,
+					opacity: 0,
 					tileSource: "dzi_c0.dzi"
 				},
 				{
-					opacity: 0,
+					opacity: 1,
 					tileSource: "dzi_c1.dzi"
 				}
 			]
 		});
-
 		// Switching channels
 		// From: https://codepen.io/iangilman/pen/YXRLea
-		var selectedCh = 0;
 
-		function fSwitchCh() {
-			selectedCh = (selectedCh + 1) % 2;
-			fade(viewer01.world.getItemAt(0), (selectedCh === 0 ? 1 : 0));
-			fade(viewer01.world.getItemAt(1), (selectedCh === 1 ? 1 : 0));
-		};
+
+		var switchButton = document.querySelector('.switch-button');
+		var switchBtnRight = document.querySelector('.switch-button-case.right');
+		var switchBtnLeft = document.querySelector('.switch-button-case.left');
+		var activeSwitch = document.querySelector('.switch-button .active');
+
+		function switchLeft() {
+			channel = 1;
+			let alternative = 2;
+			switchBtnRight.classList.remove('active-case');
+			switchBtnLeft.classList.add('active-case');
+			activeSwitch.style.left = '0%';
+			fade(viewer12.world.getItemAt(0), 1);
+			fade(viewer12.world.getItemAt(1), 0);
+			var x = document.getElementById("chd" + channel);
+			document.getElementById("default" + channel).click();
+			var y = document.getElementById("chd" + alternative);
+			x.style.display = "block";
+			y.style.display = "none";
+			window.above = [];
+			viewer12.raiseEvent('update-viewport');
+
+		}
+
+		function switchRight() {
+			channel = 2;
+			let alternative = 1;
+			switchBtnRight.classList.add('active-case');
+			switchBtnLeft.classList.remove('active-case');
+			activeSwitch.style.left = '50%';
+			fade(viewer12.world.getItemAt(1), 1);
+			fade(viewer12.world.getItemAt(0), 0);
+			var x = document.getElementById("chd" + channel);
+			document.getElementById("default" + channel).click();
+			var y = document.getElementById("chd" + alternative);
+			x.style.display = "block";
+			y.style.display = "none";
+			window.above = [];
+			viewer12.raiseEvent('update-viewport');
+		}
+
+		switchBtnLeft.addEventListener('click', function () {
+			switchLeft();
+		}, false);
+
+		switchBtnRight.addEventListener('click', function () {
+			switchRight();
+		}, false);
+
+
+		// default channel is channel 2
+		var channel = 2;
 
 		var fade = function (image, targetOpacity) {
 			var currentOpacity = image.getOpacity();
@@ -434,7 +545,15 @@
 		// Image filters
 
 		// Flags and settings of image filters; changed in UI
-		var selFilters = {
+		var selFilters0 = {
+			inv: 0,
+			bright: 0,
+			contr: 1,
+			levMin: 0,
+			levMax: 255
+		}
+
+		var selFilters12 = {
 			inv: 0,
 			bright: 0,
 			contr: 1,
@@ -443,94 +562,90 @@
 		}
 
 		// Switching inversion
-		function fSwitchInv() {
+		function fSwitchInv(viewer, selFilters) {
 
 			selFilters.inv = (selFilters.inv + 1) % 2;
 
-			fApplyFilters(selFilters)
+			fApplyFilters(selFilters, viewer)
 		};
+		//set the image processing sliders
+		function sliderSettings(viewer, selFilters, sliderBright, outputBright, sliderContr, outputContr, sliderLevelMin, outputLevelMin, sliderLevelMax, outputLevelMax) {
+			// Brightness slider
+			outputBright.innerHTML = sliderBright.value;
+			sliderBright.oninput = function () {
+				outputBright.innerHTML = this.value;
+				selFilters.bright = parseInt(this.value);
 
-		// Brightness slider
-		var sliderBright = document.getElementById("slBright");
-		var outputBright = document.getElementById("valBright");
-		outputBright.innerHTML = sliderBright.value;
+				fApplyFilters(selFilters, viewer);
+			}
 
-		sliderBright.oninput = function () {
-			outputBright.innerHTML = this.value;
-			selFilters.bright = parseInt(this.value);
+			sliderBright.ondblclick = function () {
+				this.value = 0;
+				outputBright.innerHTML = 0;
+				selFilters.bright = 0;
 
-			fApplyFilters(selFilters);
-		}
+				fApplyFilters(selFilters, viewer);
+			}
 
-		sliderBright.ondblclick = function () {
-			this.value = 0;
-			outputBright.innerHTML = 0;
-			selFilters.bright = 0;
+			// Contrast slider
+			outputContr.innerHTML = sliderContr.value;
 
-			fApplyFilters(selFilters);
-		}
+			sliderContr.oninput = function () {
+				outputContr.innerHTML = this.value;
+				selFilters.contr = parseFloat(this.value);
 
-		// Contrast slider
-		var sliderContr = document.getElementById("slContr");
-		var outputContr = document.getElementById("valContr");
-		outputContr.innerHTML = sliderContr.value;
+				fApplyFilters(selFilters, viewer);
+			}
 
-		sliderContr.oninput = function () {
-			outputContr.innerHTML = this.value;
-			selFilters.contr = parseFloat(this.value);
+			sliderContr.ondblclick = function () {
+				this.value = 1;
+				outputContr.innerHTML = 1;
+				selFilters.contr = 1;
 
-			fApplyFilters(selFilters);
-		}
+				fApplyFilters(selFilters, viewer);
+			}
 
-		sliderContr.ondblclick = function () {
-			this.value = 1;
-			outputContr.innerHTML = 1;
-			selFilters.contr = 1;
+			// Level min/max sliders
+			outputLevelMin.innerHTML = sliderLevelMin.value;
 
-			fApplyFilters(selFilters);
-		}
+			sliderLevelMin.oninput = function () {
+				outputLevelMin.innerHTML = this.value;
+				selFilters.levMin = parseInt(this.value);
 
-		// Level min/max sliders
-		var sliderLevelMin = document.getElementById("slLevMin");
-		var outputLevelMin = document.getElementById("valLevMin");
-		outputLevelMin.innerHTML = sliderLevelMin.value;
+				fApplyFilters(selFilters, viewer);
+			}
 
-		sliderLevelMin.oninput = function () {
-			outputLevelMin.innerHTML = this.value;
-			selFilters.levMin = parseInt(this.value);
+			sliderLevelMin.ondblclick = function () {
+				this.value = 0;
+				outputLevelMin.innerHTML = 0;
+				selFilters.levMin = 0;
 
-			fApplyFilters(selFilters);
-		}
+				fApplyFilters(selFilters, viewer);
+			}
 
-		sliderLevelMin.ondblclick = function () {
-			this.value = 0;
-			outputLevelMin.innerHTML = 0;
-			selFilters.levMin = 0;
 
-			fApplyFilters(selFilters);
-		}
 
-		var sliderLevelMax = document.getElementById("slLevMax");
-		var outputLevelMax = document.getElementById("valLevMax");
-		outputLevelMax.innerHTML = sliderLevelMax.value;
+			outputLevelMax.innerHTML = sliderLevelMax.value;
 
-		sliderLevelMax.oninput = function () {
-			outputLevelMax.innerHTML = this.value;
-			selFilters.levMax = parseInt(this.value);
+			sliderLevelMax.oninput = function () {
+				outputLevelMax.innerHTML = this.value;
+				selFilters.levMax = parseInt(this.value);
 
-			fApplyFilters(selFilters);
-		}
+				fApplyFilters(selFilters, viewer);
+			}
 
-		sliderLevelMax.ondblclick = function () {
-			this.value = 255;
-			outputLevelMax.innerHTML = 255;
-			selFilters.levMax = 255;
+			sliderLevelMax.ondblclick = function () {
+				this.value = 255;
+				outputLevelMax.innerHTML = 255;
+				selFilters.levMax = 255;
 
-			fApplyFilters(selFilters);
+				fApplyFilters(selFilters, viewer);
+			}
+
 		}
 
 		// Apply filters depending on values in inArg changed in UI
-		function fApplyFilters(inArg) {
+		function fApplyFilters(inArg, viewer) {
 			var locFilters = [];
 
 			if (inArg.inv > 0) {
@@ -549,64 +664,162 @@
 				locFilters.push(OpenSeadragon.Filters.LEVELS(inArg.levMin, inArg.levMax))
 			}
 
-			viewer01.setFilterOptions({
+			viewer.setFilterOptions({
 				filters: {
 					processors: locFilters
 				},
 				loadMode: 'async'
 			})
+
 		}
 
-		// Initialize variables necessary for well highlighting
+		//define function for maping cursor position within the specified FOV
+		function mapPosition(position, Dim, nFOV, smallS, bigS, axis) {
+			if (axis == "x") {
+				var bigI = window.xbigI
+			} else {
+				var bigI = window.ybigI
+			}
+			position = position - bigI * (bigS - smallS)
+			dist = Math.floor(position / (Dim + smallS))
+			position = position - dist * (Dim + smallS)
+			bigI = Math.floor(dist / nFOV)
+			if (axis == "x") {
+				window.xbigI = bigI
+			} else {
+				window.ybigI = bigI
+			}
+			return position
+		}
+
+		//set image processing for ch0 and ch12
+		var sliderBright12 = document.getElementById("slBright" + 12);
+		var outputBright12 = document.getElementById("valBright" + 12);
+		var sliderContr12 = document.getElementById("slContr" + 12);
+		var outputContr12 = document.getElementById("valContr" + 12);
+		var sliderLevelMin12 = document.getElementById("slLevMin" + 12);
+		var outputLevelMin12 = document.getElementById("valLevMin" + 12);
+		var sliderLevelMax12 = document.getElementById("slLevMax" + 12);
+		var outputLevelMax12 = document.getElementById("valLevMax" + 12);
+
+		sliderSettings(viewer12, selFilters12, sliderBright12, outputBright12, sliderContr12, outputContr12, sliderLevelMin12, outputLevelMin12, sliderLevelMax12, outputLevelMax12)
+
+		//initializes the variables necessary for well highlighting
+
 
 		// mapped to viewport coordinates and sorted arrays of Rows and Columns of the wells
-		var xOverlay = []
-		var yOverlay = []
+		var xOverlay1 = []
+		var yOverlay1 = []
+		var xOverlay2 = []
+		var yOverlay2 = []
 
 		// array that contains the wells that are above a specified treshold set by the respective slider
 		var above = []
 
-		//adds the canvas to a specified viewer
-		var overlay = viewer1.canvasOverlay({
+
+
+		//adds the canvas to  specified viewers
+
+		var overlay1 = viewer12.canvasOverlay({
 			onRedraw: function () {
-				overlay.context2d().fillStyle = "red";
+				overlay1.context2d().fillStyle = "red";
 				//iterate over the wells that are above a treshold and draw red squares around them
 				for (var i = 0; i < above.length; i++) {
-					overlay.context2d().fillRect(xOverlay[above[i]], yOverlay[above[i]], maxWell, maxWell);
-
+					overlay1.context2d().fillRect(xOverlay1[above[i]], yOverlay1[above[i]], maxWell, maxWell * 1.27);
 					//empirical numbers that gave good appearance result as just drawing non-filled red squares was not working
-					overlay.context2d().clearRect(xOverlay[above[i]] + 0.035 * maxWell, yOverlay[above[i]] + 0.035 * maxWell, maxWell - 0.07 * maxWell, maxWell - 0.07 * maxWell);
+					overlay1.context2d().clearRect(xOverlay1[above[i]] + 0.035 * maxWell, yOverlay1[above[i]] + 0.035 * maxWell * 1.25, maxWell - 0.07 * maxWell, 1.25 * (maxWell - 0.05 * maxWell));
+				}
+			},
+			clearBeforeRedraw: true
+		});
+		//resizes the overlay with respect to the current browser screen
+		$(window).resize(function () {
+			overlay1.resize();
+		});
+
+		var overlay2 = viewer12.canvasOverlay({
+			onRedraw: function () {
+				overlay2.context2d().fillStyle = "red";
+				//iterate over the wells that are above a treshold and draw red squares around them
+				for (var i = 0; i < above.length; i++) {
+					overlay2.context2d().fillRect(xOverlay2[above[i]], yOverlay2[above[i]], Height, Width);
+					//empirical numbers that gave good appearance result as just drawing non-filled red squares was not working
+					overlay2.context2d().clearRect(xOverlay2[above[i]] + 0.03 * Height, yOverlay2[above[i]] + 0.03 * Width, Height - 0.06 * Height, Width - 0.06 * Width);
 				}
 			},
 			clearBeforeRedraw: true
 		});
 
-		//resizes the overlay with respect to the current browser screen
+		// Resize the overlay with respect to the current browser screen
 		$(window).resize(function () {
-			overlay.resize();
+			overlay2.resize();
 		});
 
+		//declare the variable needed for Fov position
+		var positionEl = document.getElementById("locator")
+		window.xbigI = 0
+		window.ybigI = 0
 
-		var data = "mockData.csv"
-		var value = "CNfrac_akt.mn"
+		// Decleare variables specifying csv file names as well as the target mean value column
+		var data1 = "data/mockData_c0.csv"
+		var value1 = "meas.mn"
+		var data2 = "data/mockData_c1.csv"
+		var value2 = "meas.mn"
 
-		//generate heatmaps and color-scale gradients
-		createHeatmap(viewer1, "my_dataviz", data, value)
-		createHeatmap(viewer1, "my_dataviz2", data, "npi")
-		createHeatmap(viewer1, "my_dataviz3", data, "zscore")
-		drawScale("seq317", d3.interpolateSpectral)
-		drawScale("seq318", d3.interpolateSpectral)
-		drawScale("seq319", d3.interpolateSpectral)
+		viewer12.addHandler("open", function () {
+			console.log("loaded")
+			window.dim = viewer12.world.getItemAt(0).getContentSize();
 
-		//generate sliders used to control specific heatmaps and wells at the given tab as well as the sliders to control the data range with respect to colors
-		createSlider(viewer1, "slider-simple", data, value, "my_dataviz", "slider-range")
-		createSlider(viewer1, "slider-simple2", data, "npi", "my_dataviz2", "slider-range2")
-		createSlider(viewer1, "slider-simple3", data, "zscore", "my_dataviz3", "slider-range3")
+			//generate heatmaps and color-scale gradients
+			createHeatmap(viewer12, "my_dataviz1", data1, value1)
+			createHeatmap(viewer12, "my_dataviz2", data1, "npi")
+			createHeatmap(viewer12, "my_dataviz3", data1, "zscore")
+			createHeatmap(viewer12, "my_dataviz4", data2, value2)
+			createHeatmap(viewer12, "my_dataviz5", data2, "npi")
+			createHeatmap(viewer12, "my_dataviz6", data2, "zscore")
+			drawScale("seq317", d3.interpolateSpectral)
+			drawScale("seq318", d3.interpolateSpectral)
+			drawScale("seq319", d3.interpolateSpectral)
+			drawScale("seq320", d3.interpolateSpectral)
+			drawScale("seq321", d3.interpolateSpectral)
+			drawScale("seq322", d3.interpolateSpectral)
 
-		//set up buttons to clear wells and heatmap
-		clearView("overlay", "my_dataviz")
-		clearView("overlay2", "my_dataviz2")
-		clearView("overlay3", "my_dataviz3")
+			//generate sliders used to control specific heatmaps and wells at the given tab as well as the sliders to control the data range with respect to colors
+			createSlider(viewer12, "slider-simple", data1, value1, "my_dataviz1", "slider-range", 1)
+			createSlider(viewer12, "slider-simple2", data1, "npi", "my_dataviz2", "slider-range2", 1)
+			createSlider(viewer12, "slider-simple3", data1, "zscore", "my_dataviz3", "slider-range3", 1)
+			createSlider(viewer12, "slider-simple4", data2, value2, "my_dataviz4", "slider-range4", 2)
+			createSlider(viewer12, "slider-simple5", data2, "npi", "my_dataviz5", "slider-range5", 2)
+			createSlider(viewer12, "slider-simple6", data2, "zscore", "my_dataviz6", "slider-range6", 2)
+
+			//set up buttons to clear wells and heatmap
+			clearView("overlay1", "my_dataviz1", viewer12)
+			clearView("overlay2", "my_dataviz2", viewer12)
+			clearView("overlay3", "my_dataviz3", viewer12)
+			clearView("overlay4", "my_dataviz4", viewer12)
+			clearView("overlay5", "my_dataviz5", viewer12)
+			clearView("overlay6", "my_dataviz6", viewer12)
+
+			//??? clarify the comment
+			// the last argument is other and that is which positive val not to use so if the data is erk argument should be akt
+			createBoxplot("QC1", data1, value1, "well.type", "pos")
+			createBoxplot("QC2", data2, value2, "well.type", "pos")
+
+			//get the position of the cursor within the specifed FOV
+			var tracker = new OpenSeadragon.MouseTracker({
+				element: viewer12.container,
+				moveHandler: function (event) {
+					var webPoint = event.position;
+					var imagePoint = viewer12.viewport.viewerElementToImageCoordinates(webPoint);
+					imagePoint.x = mapPosition(imagePoint.x, 1360, 3, 5, 30, "x")
+					imagePoint.y = mapPosition(imagePoint.y, 1024, 5, 5, 30, "y")
+					positionEl.innerHTML =
+						'FOV XY position:<br>' + imagePoint.toString();
+				}
+			});
+			tracker.setTracking(true);
+
+		})
 	</script>
 
 </body>
