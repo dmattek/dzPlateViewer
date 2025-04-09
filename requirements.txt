@@ -1,5 +1,5 @@
 attrs==20.3.0
-imagecodecs==2021.4.28
+imagecodecs==2023.9.18
 imageio==2.9.0
 ipython-genutils==0.2.0
 joblib==1.2.0
