@@ -66,8 +66,12 @@ Where:
 * `f00, f01, ...` is the field of view,
 * `d01, d02, ...` is the channel number.
 
-The parameters `-p` and `-w` of the `scripts/makePlateMontageDZI.py` script prescribe the geometry of the plate and the well, respectively. For example, `-p 2 2 -w 4 4` define 2x2 wells and 4x4 FOVs per well. With this definition, the script assumes 64 images per channel. If an image is missing, the script will fill the gap with an empty image with an appropriate label.
-The script adds grid lines to the composite image; thin lines are added between FOVs, thicker lines are added between wells. In addition, wells are labeled with well names.
+The parameters `-p` and `-w` of the `scripts/makePlateMontageDZI.py` script prescribe the geometry of the plate and the well, respectively. 
+For example, `-p 2 2 -w 4 4` defines a plate with 2x2 wells and wells with 4x4 FOVs. 
+With this definition, the script assumes a total of 4x16=64 images per channel. 
+If an image is missing, the script will fill the gap with an empty image with an appropriate label.
+The script adds grid lines to the composite image; thin lines are added between FOVs, thicker lines are added between wells. 
+Additionally, wells are labeled with well names.
 
 The parameter `-r` of the `scripts/makePlateMontageDZI.py` script determines the number of threads to be used in creating the deepzoom pyramid, the default is 4.
 

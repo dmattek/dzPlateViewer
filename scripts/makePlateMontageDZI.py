@@ -65,15 +65,14 @@ from collections import deque
 
 NS_DEEPZOOM = "http://schemas.microsoft.com/deepzoom/2008"
 
-DEFAULT_RESIZE_FILTER = Image.ANTIALIAS
+DEFAULT_RESIZE_FILTER = Image.LANCZOS
 DEFAULT_IMAGE_FORMAT = "png"
 
 RESIZE_FILTERS = {
-    "cubic": Image.CUBIC,
     "bilinear": Image.BILINEAR,
     "bicubic": Image.BICUBIC,
     "nearest": Image.NEAREST,
-    "antialias": Image.ANTIALIAS,
+    "antialias": Image.LANCZOS,
 }
 
 IMAGE_FORMATS = {
