@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/263708831.svg)](https://doi.org/10.5281/zenodo.17201410)
+
 # Deep Zoom Plate Viewer
 
 An html-based plate viewer for microscopy images using [DeepZoom](https://en.wikipedia.org/wiki/Deep_Zoom) technology.
