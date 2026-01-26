@@ -14,10 +14,9 @@
 # If an image is missing, the script inserts an empty image to the montage.
 #
 # Names of image files need to follow the convention:
-# A02f23d2.ext
+# A02_f23_d2.ext
 #
 # where:
-# xxxx - some text
 # A02 - well
 # f23 - fov
 # d2 - channel
@@ -34,7 +33,7 @@
 
 import os, argparse
 from PIL import Image, ImageDraw, ImageFont
-import imageio
+import imageio.v2 as imageio
 import numpy as np
 
 
@@ -397,7 +396,7 @@ def parseArguments():
 
         return args
 
-def processWell(inRow, inCol):
+def processWell(inRow, inCol, inWellFOVs):
     # create canvas for the montage
     locImWell = Image.new(imMode, (imWellWidth, imWellHeight), bgEmptyWell)
 
@@ -410,10 +409,9 @@ def processWell(inRow, inCol):
     # f00 - fov
     # d1 - channel
 
-    for locIfov in wellFOVs:
+    for locIfov in inWellFOVs:
 
-#        locImPath = "%s%02df%02dd%d.%s" % (imDir + '/' + imCore + locIrow, locIcol, locIfov, imCh, imExt)
-        locImPath = "%s%02df%02dd%d.%s" % (imDir + '/' + locIrow, locIcol, locIfov, imCh, imExt)
+        locImPath = f"{imDir}/{locIrow}{locIcol:02d}_f{locIfov:02d}_d{imCh}.{imExt}"
         if(DEB):
             print("\nChecking:", locImPath)
 
@@ -610,7 +608,7 @@ if __name__ == "__main__":
                 print('\nBounding box for inserting Well image into Plate canvas:')
                 print(bbox)
 
-            imWell = processWell(plateRow[iRow], iCol+1)
+            imWell = processWell(plateRow[iRow], iCol+1, wellFOVs)
             imPlate.paste(imWell, bbox)
 
 
