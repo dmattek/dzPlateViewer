@@ -254,7 +254,6 @@
 
 	<h2>Plate XXXXX</h2>
 
-
 	<!-- Tab links -->
 	<div class="tab">
 		<button class="tablinks active" onclick="openTab(event, 'tabch12',0)" id="Tab12">Ch 0+1</button>
@@ -673,7 +672,16 @@
 
 		}
 
-		//define function for maping cursor position within the specified FOV
+		// function for maping cursor position within the specified FOV
+		// parameters:
+		// position - the coordinate of the cursor in the respective axis
+		// Dim - the dimension of the FOV in pixels
+		// nFOV - the number of FOVs in the respective direction
+		// smallS - the size of the small space between the FOVs in pixels
+		// bigS - the size of the big space between the FOVs in pixels
+		// axis - the respective axis "x" or "y"
+		//
+		// Note, the values of smallS and bigS correspond to those set in makePlateMontageDZI.py: paddingFOV and paddingWell, respectively.
 		function mapPosition(position, Dim, nFOV, smallS, bigS, axis) {
 			if (axis == "x") {
 				var bigI = window.xbigI
@@ -811,8 +819,12 @@
 				moveHandler: function (event) {
 					var webPoint = event.position;
 					var imagePoint = viewer12.viewport.viewerElementToImageCoordinates(webPoint);
-					imagePoint.x = mapPosition(imagePoint.x, 1360, 3, 5, 30, "x")
-					imagePoint.y = mapPosition(imagePoint.y, 1024, 5, 5, 30, "y")
+
+					// change the numbers below according to the FOV size and the number of FOVs in the respective direction; 
+					// currently set to 4 FOVs with 1024 pixels each and a small space of 5 pixels between them, 
+					// the big space between the FOVs is set to 30 pixels
+					imagePoint.x = mapPosition(imagePoint.x, 1104, 4, 5, 30, "x")
+					imagePoint.y = mapPosition(imagePoint.y, 1104, 4, 5, 30, "y")
 					positionEl.innerHTML =
 						'FOV XY position:<br>' + imagePoint.toString();
 				}

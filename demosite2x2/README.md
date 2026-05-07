@@ -2,15 +2,16 @@
 
 A **live** demo web-viewer with 2x2 wells, 4x4 FOVs per well can be accessed [here](http://macdobry.net/deepzoomdemo/demosite2x2/index.html).
 
-This folder contains everything (HTML and JavaScript code) necessary to display a demo of a web-based plate viewer. The entire site including the images can be downloaded as a `zip` archive from [here](https://www.dropbox.com/s/lwycuvlqdtirvr8/demosite2x2.zip?dl=0).
+This folder contains everything (HTML and JavaScript code) necessary to display a demo of a web-based plate viewer. The entire site including the images can be downloaded as a `zip` archive from [here](https://macdobry.net/deepzoomdemo/demo-site2x2.zip).
 
 Alternatively, you can recreate the website by following these steps.
 
 ## Download raw images
 
-This repo **does not** contain `dzi` pyramid images. Download a `zip` archive with raw images necessary to produce the `dzi` pyramid from [here](https://www.dropbox.com/s/5cmejgy9x21434n/demodata2x2.zip?dl=0). Unzip the archive and place the `demodata2x2` folder in the current folder.
+This repo **does not** contain `dzi` pyramid images. Download a `zip` archive with raw microscopy images necessary to produce the `dzi` pyramid from [here](https://macdobry.net/deepzoomdemo/demo-img-data2x2.zip). 
+Unzip the archive and place the `demodata2x2` folder in the current folder.
 
-The images follow the naming convention:
+The individual TIFF images are at 1104px x 1104px resolution and follow the naming convention:
 
 ```
 A01f00d0.TIFF
@@ -36,8 +37,9 @@ To generate `dzi` image pyramids for both channels from images in the `demodata2
 Where parameters:
 
 * `-v` switches on the verbose mode,
-* `-p` defines plate dimensions, e.g. `-p 2 2` defines a 2x2 well plate,
-* `-w` defines well dimensions, e.g. `-w 4 4` defines a 4x4 field of view well,
+* `-p` defines plate dimensions, e.g., `-p 2 2` defines a 2x2 well plate,
+* `-w` defines well dimensions, e.g., `-w 4 4` defines a 4x4 field of view well,
+* `-m` defines the image resolution, e.g., `-m 1104 1104`, 
 * `-c` defines the channel to process,
 * `-f` defines the name of the output `dzi` file,
 * `-o` defines the folder to place the folder with files of the image pyramid.

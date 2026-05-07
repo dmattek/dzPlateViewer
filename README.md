@@ -22,9 +22,9 @@ The [demo](http://macdobry.net/deepzoomdemo/demoscreen/index.html) shows the res
 
 A [demo](http://macdobry.net/deepzoomdemo/demosite2x2/index.html) web-viewer with 2x2 wells, 4x4 FOVs per well.
 
-A `zip` archive with a dataset used to produce that demo can be downloaded from [here](https://www.dropbox.com/s/5cmejgy9x21434n/demodata2x2.zip?dl=0).
+A `zip` archive with a dataset used to produce that demo can be downloaded from [here](https://macdobry.net/deepzoomdemo/demo-img-data2x2.zip).
 
-A `zip` archive with a full demo website can be downloaded from [here](https://www.dropbox.com/s/lwycuvlqdtirvr8/demosite2x2.zip?dl=0).
+A `zip` archive with a full demo website can be downloaded from [here](https://macdobry.net/deepzoomdemo/demo-site2x2.zip).
 
 
 ## Building blocks
