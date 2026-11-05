@@ -35,6 +35,7 @@ esac
 # Activate the micromamba environment. The shell hook must be evaluated first,
 # otherwise `micromamba activate` fails with "can't modify the parent shell".
 MICROMAMBA="$HOME/.local/bin/micromamba"
+export MAMBA_ROOT_PREFIX="$HOME/micromamba"
 eval "$("$MICROMAMBA" shell hook --shell bash)"
 micromamba activate dz
 
