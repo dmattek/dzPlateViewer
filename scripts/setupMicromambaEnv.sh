@@ -34,14 +34,13 @@ while getopts ":n:p:fh" opt; do
     esac
 done
 
-# Packages required by makePlateMontageDZI.py and makePlateMontageDZI-multiCore.py
+# Packages required by makePlateMontageDZI.py
 PACKAGES=(
     "python=${PY_VER}"
     "pip"
     "numpy"
     "pillow"
     "imageio"
-    "joblib"   # only needed by makePlateMontageDZI-multiCore.py
 )
 
 if ! command -v micromamba >/dev/null 2>&1; then
@@ -65,12 +64,11 @@ micromamba create -y -n "$ENV_NAME" -c conda-forge "${PACKAGES[@]}"
 
 echo "Verifying installation..."
 micromamba run -n "$ENV_NAME" python -c "
-import sys, numpy, PIL, imageio, joblib
+import sys, numpy, PIL, imageio
 print('python ', sys.version.split()[0])
 print('numpy  ', numpy.__version__)
 print('pillow ', PIL.__version__)
 print('imageio', imageio.__version__)
-print('joblib ', joblib.__version__)
 "
 
 echo

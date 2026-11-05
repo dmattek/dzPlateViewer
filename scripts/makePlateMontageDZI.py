@@ -60,6 +60,7 @@ import warnings
 import xml.dom.minidom
 
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 
 
 NS_DEEPZOOM = "http://schemas.microsoft.com/deepzoom/2008"
@@ -180,8 +181,10 @@ class ImageCreator(object):
         image_quality=0.8,
         resize_filter=None,
         copy_metadata=False,
+        n_threads=1,
     ):
         self.tile_size = int(tile_size)
+        self.n_threads = max(1, int(n_threads))
         self.tile_format = tile_format
         self.tile_overlap = _clamp(int(tile_overlap), 0, 10)
         self.image_quality = _clamp(image_quality, 0, 1.0)
@@ -191,18 +194,22 @@ class ImageCreator(object):
         self.resize_filter = resize_filter
         self.copy_metadata = copy_metadata
 
-    def get_image(self, level):
-        """Returns the bitmap image at the given level."""
+    def get_image(self, level, source):
+        """Returns the bitmap image at the given level, downsampled from source.
+
+        source is the image of the level above (level + 1), so each level is
+        made by halving the previous one rather than resizing the full image.
+        """
         assert (
             0 <= level and level < self.descriptor.num_levels
         ), "Invalid pyramid level"
         width, height = self.descriptor.get_dimensions(level)
         # don't transform to what we already have
-        if self.descriptor.width == width and self.descriptor.height == height:
-            return self.image
+        if source.size == (width, height):
+            return source
         if (self.resize_filter is None) or (self.resize_filter not in RESIZE_FILTERS):
-            return self.image.resize((width, height), Image.ANTIALIAS)
-        return self.image.resize((width, height), RESIZE_FILTERS[self.resize_filter])
+            return source.resize((width, height), DEFAULT_RESIZE_FILTER)
+        return source.resize((width, height), RESIZE_FILTERS[self.resize_filter])
 
     def tiles(self, level):
         """Iterator for all tiles in the given level. Returns (column, row) of a tile."""
@@ -210,6 +217,24 @@ class ImageCreator(object):
         for column in range(columns):
             for row in range(rows):
                 yield (column, row)
+
+    def save_tile(self, level_image, level, column, row, level_dir):
+        """Crops a single tile from the level image and saves it to level_dir."""
+
+        if (DEB):
+            print("Pyramid col x row: %d %d" % (column, row))
+
+        bounds = self.descriptor.get_tile_bounds(level, column, row)
+        tile = level_image.crop(bounds)
+        format = self.descriptor.tile_format
+        tile_path = os.path.join(level_dir, "%s_%s.%s" % (column, row, format))
+        with open(tile_path, "wb") as tile_file:
+            if self.descriptor.tile_format == "jpg":
+                jpeg_quality = int(self.image_quality * 100)
+                tile.save(tile_file, "JPEG", quality=jpeg_quality)
+            else:
+                png_compress = round((1 - self.image_quality)*10)
+                tile.save(tile_file, "PNG", compress_level = png_compress)
 
     def create(self, source, destination):
         """Creates Deep Zoom image from source file and saves it to destination."""
@@ -232,32 +257,42 @@ class ImageCreator(object):
         # Create tiles
         image_files = _get_or_create_path(_get_files_path(destination))
 
-        # Parallelization?
-        for level in range(self.descriptor.num_levels):
+        # Go from the full-resolution level down to 1x1 px;
+        # each level is downsampled from the previous (larger) one.
+        # Tiles of a level are cropped, encoded and written by a pool of threads;
+        # Pillow releases the GIL while encoding, so threads overlap CPU and I/O.
+        level_image = self.image
+        time_total = time.perf_counter()
 
-            if (DEB):
-                print("Pyramid level %d" % level)
-
-            level_dir = _get_or_create_path(os.path.join(image_files, str(level)))
-            level_image = self.get_image(level)
-
-            for (column, row) in self.tiles(level):
+        with ThreadPoolExecutor(max_workers=self.n_threads) as pool:
+            for level in reversed(range(self.descriptor.num_levels)):
 
                 if (DEB):
-                    print("Pyramid col x row: %d %d" % (column, row))
+                    print("Pyramid level %d" % level)
 
-                bounds = self.descriptor.get_tile_bounds(level, column, row)
-                tile = level_image.crop(bounds)
-                format = self.descriptor.tile_format
-                tile_path = os.path.join(level_dir, "%s_%s.%s" % (column, row, format))
-                tile_file = open(tile_path, "wb")
+                level_dir = _get_or_create_path(os.path.join(image_files, str(level)))
 
-                if self.descriptor.tile_format == "jpg":
-                    jpeg_quality = int(self.image_quality * 100)
-                    tile.save(tile_file, "JPEG", quality=jpeg_quality)
-                else:
-                    png_compress = round((1 - self.image_quality)*10)
-                    tile.save(tile_file, compress_level = png_compress)
+                time_start = time.perf_counter()
+                level_image = self.get_image(level, level_image)
+                time_resize = time.perf_counter() - time_start
+
+                time_start = time.perf_counter()
+                futures = [
+                    pool.submit(self.save_tile, level_image, level, column, row, level_dir)
+                    for (column, row) in self.tiles(level)
+                ]
+                # wait for all tiles of this level; re-raises any error from a worker
+                for future in futures:
+                    future.result()
+                time_tiles = time.perf_counter() - time_start
+
+                if (DEB):
+                    columns, rows = self.descriptor.get_num_tiles(level)
+                    print("Level %2d: %6d x %6d px, %6d tiles; resize %8.2f s, tiles %8.2f s" %
+                          (level, *level_image.size, columns * rows, time_resize, time_tiles))
+
+        if (DEB):
+            print("Pyramid total: %.2f s (%d threads)" % (time.perf_counter() - time_total, self.n_threads))
 
         # Create descriptor
         self.descriptor.save(destination)
@@ -370,9 +405,9 @@ def parseArguments():
         parser.add_argument(
                 '-r',
                 '--cores',
-                help='Number of cores for multiprocessing, default 4 (NOT USED)',
+                help='Number of threads for writing DeepZoom tiles, default 2',
                 type=int,
-                default=4)
+                default=2)
 
         parser.add_argument(
                 '-t',
@@ -622,6 +657,7 @@ if __name__ == "__main__":
         tile_format = 'png',
         image_quality = args.imquality,
         resize_filter = 'antialias',
+        n_threads = args.cores,
     )
 
     creator.create(imPlate, imPathDir)

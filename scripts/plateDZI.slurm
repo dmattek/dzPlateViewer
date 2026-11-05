@@ -7,6 +7,9 @@
 #   $1  path to the montage python script (e.g. makePlateMontageDZI.py)
 #   $2  input folder with the plate images
 #   $3  output folder for the DZI tiling
+#
+# Tiles are written with --cpus-per-task threads; override with the
+# environment variable DZ_THREADS, e.g. DZ_THREADS=4 ./submitPlateDZI.sh ...
 
 #SBATCH --job-name=dz
 #SBATCH --partition=all
@@ -46,6 +49,7 @@ echo "Script:     $PYSCRIPT"
 echo "Input dir:  $INDIR"
 echo "Output dir: $OUTDIR"
 echo "Channel:    $CH (intensities $IMIN - $IMAX)"
+echo "Threads:    ${DZ_THREADS:-${SLURM_CPUS_PER_TASK:-2}}"
 echo "Start:      $(date)"
 
 python "$PYSCRIPT" \
@@ -57,6 +61,7 @@ python "$PYSCRIPT" \
     -c "$CH" \
     -I "$IMIN" "$IMAX" \
     -f "d${CH}" \
+    -r "${DZ_THREADS:-${SLURM_CPUS_PER_TASK:-2}}" \
     -o "$OUTDIR" \
     "$INDIR"
 

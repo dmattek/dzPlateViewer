@@ -75,7 +75,7 @@ If an image is missing, the script will fill the gap with an empty image with an
 The script adds grid lines to the composite image; thin lines are added between FOVs, thicker lines are added between wells. 
 Additionally, wells are labeled with well names.
 
-The parameter `-r` of the `scripts/makePlateMontageDZI.py` script determines the number of threads to be used in creating the deepzoom pyramid, the default is 4.
+The parameter `-r` of the `scripts/makePlateMontageDZI.py` script determines the number of threads used to write the deepzoom tiles, the default is 2.
 
 To generate `dzi` image pyramids for both channels in the `../demosite2x2` folder from data in `../demodata2x2`, execute:
 
@@ -83,3 +83,62 @@ To generate `dzi` image pyramids for both channels in the `../demosite2x2` folde
 ./makePlateMontageDZI.py -v -p 2 2 -w 4 4 -c 0 -f dzi_c0 -o ../demosite2x2 ../demodata2x2
 ./makePlateMontageDZI.py -v -p 2 2 -w 4 4 -c 1 -f dzi_c1 -o ../demosite2x2 ../demodata2x2
 ```
+
+### Running on a SLURM cluster
+
+`scripts/submitPlateDZI.sh` generates DZI pyramids for one or more 96-well plates on a SLURM cluster.
+It submits one array job per plate folder; each of its 3 array tasks processes one channel (0-2).
+
+#### One-time setup
+
+Create the `dz` micromamba environment (numpy, pillow, imageio) on the cluster:
+
+```
+./scripts/setupMicromambaEnv.sh        # -n NAME, -p PYTHON_VERSION, -f to recreate
+```
+
+#### Submitting
+
+```
+./scripts/submitPlateDZI.sh [-s PYSCRIPT] OUTROOT INDIR [INDIR ...]
+```
+
+* `OUTROOT` - root output folder; each plate goes to `OUTROOT/<name of INDIR>/`,
+* `INDIR` - folder with all images of a single plate (all wells, channels 0-2),
+* `-s` - path to the montage script, if it is not `makePlateMontageDZI.py` next to `submitPlateDZI.sh`. The `fonts` folder must sit next to that script.
+
+For example:
+
+```
+./scripts/submitPlateDZI.sh /data/dzi /data/plate01 /data/plate02
+```
+
+produces `d0.dzi`, `d1.dzi`, `d2.dzi` and the corresponding `d0_files/`, `d1_files/`, `d2_files/` tile folders in `/data/dzi/plate01/` and `/data/dzi/plate02/`.
+SLURM logs are written to `slurm.out/dz_<jobid>_<channel>.out` in the directory the script is called from.
+Check the progress with `squeue -u $USER` and the run time and memory of finished jobs with `sacct -j <jobid> --format=JobID,Elapsed,MaxRSS,State`.
+
+#### Parameters
+
+The job script `scripts/plateDZI.slurm` sets the following parameters; edit it to process plates with a different layout:
+
+| Parameter | Value |
+|---|---|
+| Plate dimensions | 12x8 wells (`-p 12 8`) |
+| Well dimensions | 4x4 FOVs (`-w 4 4`) |
+| Image dimensions | 2048x2048 px (`-m 2048 2048`) |
+| DeepZoom tile size | 254 px (`-t 254`) |
+| Image file extension | `tif` (`-x tif`) |
+| Channel 0 intensities | 100 - 4500, output `d0` |
+| Channel 1 intensities | 60 - 4500, output `d1` |
+| Channel 2 intensities | 100 - 2200, output `d2` |
+
+SLURM resources per task: partition `all`, 2 CPUs, 32 GB memory, 2 h.
+Two CPUs correspond to a single physical core on nodes with hyper-threading.
+
+The number of threads writing the tiles equals `--cpus-per-task`; to try a different number, set `DZ_THREADS` when submitting:
+
+```
+DZ_THREADS=4 ./scripts/submitPlateDZI.sh /data/dzi /data/plate01
+```
+
+The job activates the `dz` environment with the micromamba binary at `~/.local/bin/micromamba` and `MAMBA_ROOT_PREFIX=~/micromamba`; adjust both in `plateDZI.slurm` if your installation differs.
