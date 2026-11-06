@@ -14,13 +14,18 @@
 # If an image is missing, the script inserts an empty image to the montage.
 #
 # Names of image files need to follow the convention:
-# A02_f23_d2.ext
+# t1_A02_s23_w2_z1.ext
 #
 # where:
+# t1 - time point (fixed)
 # A02 - well
-# f23 - fov
-# d2 - channel
+# s23 - fov, starting from 1
+# w2 - channel; same as -c
+# z1 - z-plane (fixed)
 # ext - extension, e.g. TIFF
+#
+# The old naming convention, A02_f23_d2.ext (fov starting from 0),
+# is kept as a commented line in processWell().
 #
 # OUTPUT
 # A DZI file and corresponding tiles are saved in a specified output folder
@@ -439,14 +444,22 @@ def processWell(inRow, inCol, inWellFOVs):
     locIcol = inCol
 
     # Read images of FOVs of a single well
-    # Assumption: image files are named according to a convetion xxxx_A01f00d1
+    # Assumption: image files are named according to a convention t1_A01_s1_w1_z1
+    # t1 - time point (fixed)
     # A01 - well
-    # f00 - fov
-    # d1 - channel
+    # s1 - fov, starting from 1
+    # w1 - channel; same as -c
+    # z1 - z-plane (fixed)
+    #
+    # Old naming convention: A01_f00_d0
+    # f00 - fov, starting from 0
+    # d0 - channel; same as -c
 
     for locIfov in inWellFOVs:
 
-        locImPath = f"{imDir}/{locIrow}{locIcol:02d}_f{locIfov:02d}_d{imCh}.{imExt}"
+        locImPath = f"{imDir}/t1_{locIrow}{locIcol:02d}_s{locIfov+1}_w{imCh}_z1.{imExt}"
+        # Old naming convention:
+        #locImPath = f"{imDir}/{locIrow}{locIcol:02d}_f{locIfov:02d}_d{imCh}.{imExt}"
         if(DEB):
             print("\nChecking:", locImPath)
 

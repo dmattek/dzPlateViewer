@@ -57,16 +57,20 @@ JavaScript files used to create sliders and interactive heatmaps based on CSV da
 Image files should follow the following naming convention:
 
 ```
-A01f00d0.TIFF
-A01f00d1.TIFF
+t1_A01_s1_w1_z1.tif
+t1_A01_s1_w2_z1.tif
 ...
-B12f13d2.TIFF
+t1_B12_s16_w3_z1.tif
 ```
 
 Where:
+* `t1` is the time point (fixed),
 * `A01, A02, ... B12, ...` is the well name,
-* `f00, f01, ...` is the field of view,
-* `d01, d02, ...` is the channel number.
+* `s1, s2, ...` is the field of view, starting from 1,
+* `w1, w2, ...` is the channel number, as given by the `-c` parameter of the script,
+* `z1` is the z-plane (fixed).
+
+Images named according to the old convention, e.g. `A01_f00_d0.TIFF` (field of view `f00, f01, ...` starting from 0, channel `d0, d1, ...`, as given by `-c`), can be processed by swapping the `locImPath` line in `processWell()` of `scripts/makePlateMontageDZI.py` with the commented one below it.
 
 The parameters `-p` and `-w` of the `scripts/makePlateMontageDZI.py` script prescribe the geometry of the plate and the well, respectively. 
 For example, `-p 2 2 -w 4 4` defines a plate with 2x2 wells and wells with 4x4 FOVs. 
@@ -77,7 +81,7 @@ Additionally, wells are labeled with well names.
 
 The parameter `-r` of the `scripts/makePlateMontageDZI.py` script determines the number of threads used to write the deepzoom tiles, the default is 2.
 
-To generate `dzi` image pyramids for both channels in the `../demosite2x2` folder from data in `../demodata2x2`, execute:
+To generate `dzi` image pyramids for both channels in the `../demosite2x2` folder from data in `../demodata2x2` (images named according to the old convention, see above), execute:
 
 ```
 ./makePlateMontageDZI.py -v -p 2 2 -w 4 4 -c 0 -f dzi_c0 -o ../demosite2x2 ../demodata2x2
@@ -87,7 +91,7 @@ To generate `dzi` image pyramids for both channels in the `../demosite2x2` folde
 ### Running on a SLURM cluster
 
 `scripts/submitPlateDZI.sh` generates DZI pyramids for one or more 96-well plates on a SLURM cluster.
-It submits one array job per plate folder; each of its 3 array tasks processes one channel (0-2).
+It submits one array job per plate folder; each of its 3 array tasks processes one channel: image files `w1`-`w3` (`-c 1`-`3`) are written as `d0`-`d2`.
 
 #### One-time setup
 
@@ -128,9 +132,9 @@ The job script `scripts/plateDZI.slurm` sets the following parameters; edit it t
 | Image dimensions | 2048x2048 px (`-m 2048 2048`) |
 | DeepZoom tile size | 254 px (`-t 254`) |
 | Image file extension | `tif` (`-x tif`) |
-| Channel 0 intensities | 100 - 4500, output `d0` |
-| Channel 1 intensities | 60 - 4500, output `d1` |
-| Channel 2 intensities | 100 - 2200, output `d2` |
+| Channel `w1` (`-c 1`) | intensities 100 - 4500, output `d0` |
+| Channel `w2` (`-c 2`) | intensities 60 - 4500, output `d1` |
+| Channel `w3` (`-c 3`) | intensities 100 - 2200, output `d2` |
 
 SLURM resources per task: partition `all`, 2 CPUs, 32 GB memory, 2 h.
 Two CPUs correspond to a single physical core on nodes with hyper-threading.

@@ -1,7 +1,8 @@
 #!/bin/bash
 #
 # SLURM array job: build a DZI pyramid for one channel of one 96-well plate.
-# Array task ID = image channel (0-2).
+# Array task ID = output channel (0-2). Image files are numbered from 1,
+# so task 0-2 processes image channel w1-w3 (-c 1-3) and writes d0-d2.
 #
 # Do not submit directly; use submitPlateDZI.sh, which passes:
 #   $1  path to the montage python script (e.g. makePlateMontageDZI.py)
@@ -25,9 +26,11 @@ PYSCRIPT="$1"
 INDIR="$2"
 OUTDIR="$3"
 
+# Output channel (d0-d2) and the corresponding image channel in file names (w1-w3)
 CH="${SLURM_ARRAY_TASK_ID}"
+IMCH=$((CH + 1))
 
-# Intensity range for 16->8 bit rescaling, per channel
+# Intensity range for 16->8 bit rescaling, per output channel
 case "$CH" in
     0) IMIN=100; IMAX=4500 ;;
     1) IMIN=60;  IMAX=4500 ;;
@@ -48,7 +51,7 @@ echo "Python:     $(which python)"
 echo "Script:     $PYSCRIPT"
 echo "Input dir:  $INDIR"
 echo "Output dir: $OUTDIR"
-echo "Channel:    $CH (intensities $IMIN - $IMAX)"
+echo "Channel:    image w${IMCH} -> output d${CH} (intensities $IMIN - $IMAX)"
 echo "Threads:    ${DZ_THREADS:-${SLURM_CPUS_PER_TASK:-2}}"
 echo "Start:      $(date)"
 
@@ -58,7 +61,7 @@ python "$PYSCRIPT" \
     -m 2048 2048 \
     -t 254 \
     -x tif \
-    -c "$CH" \
+    -c "$IMCH" \
     -I "$IMIN" "$IMAX" \
     -f "d${CH}" \
     -r "${DZ_THREADS:-${SLURM_CPUS_PER_TASK:-2}}" \
