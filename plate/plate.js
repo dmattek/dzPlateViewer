@@ -2,8 +2,8 @@
 //
 // The page defines, before loading this file:
 //   var PLATE = {
-//     dzi0: "d0.dzi",                       // single-channel viewer (tab Ch 0)
-//     channels: [ {dzi, csv, value, pos},   // two-channel viewer (tab Ch 1+2), left and right switch;
+//     dzi0: "c1.dzi",                       // single-channel viewer (first tab, e.g. "Ch 1")
+//     channels: [ {dzi, csv, value, pos},   // two-channel viewer (second tab, e.g. "Ch 2+3"), left and right switch;
 //                 {dzi, csv, value, pos} ], //   csv: per-well stats, value: column with the mean,
 //                                           //   pos: well.type label of the positive control
 //     fov: {width, height, perWellX, perWellY, padFov, padWell},  // montage geometry in pixels

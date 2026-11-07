@@ -55,9 +55,9 @@ Key flags:
 
 ## Running on a SLURM Cluster
 
-`scripts/submitPlateDZI.sh [-s PYSCRIPT] OUTROOT INDIR [INDIR ...]` submits one 3-task array job (`scripts/plateDZI.slurm`) per plate folder; the array task ID (0-2) is the output channel `d0`–`d2`, and the job passes `-c $((task+1))` to read image files `w1`–`w3`. Output of each plate goes to `OUTROOT/<basename of INDIR>/` as `d0.dzi`–`d2.dzi`; logs go to `slurm.out/` in the submission directory.
+`scripts/submitPlateDZI.sh [-s PYSCRIPT] OUTROOT INDIR [INDIR ...]` submits one 3-task array job (`scripts/plateDZI.slurm`) per plate folder; the array task ID (1-3) is the acquisition channel N: the job reads image files `*_wN_*` (`-c N`) and writes `cN.dzi`. Output of each plate goes to `OUTROOT/<basename of INDIR>/` as `c1.dzi`–`c3.dzi`; logs go to `slurm.out/` in the submission directory.
 
-- `plateDZI.slurm` hard-codes the 96-well layout (`-p 12 8 -w 4 4 -m 2048 2048 -t 254 -x tif`) and the per-channel intensity ranges (w1→d0 100–4500, w2→d1 60–4500, w3→d2 100–2200).
+- `plateDZI.slurm` hard-codes the 96-well layout (`-p 12 8 -w 4 4 -m 2048 2048 -t 254 -x tif`) and the per-channel intensity ranges (c1 100–4500, c2 60–4500, c3 100–2200).
 - The deployed montage script may be renamed, hence `-s`; it needs `fonts/` next to it.
 - micromamba must be initialised with `eval "$(micromamba shell hook --shell bash)"` before `micromamba activate` in batch jobs; the binary is `~/.local/bin/micromamba` and `MAMBA_ROOT_PREFIX` is set explicitly.
 - `--cpus-per-task=2` is intentional: on the hyper-threaded nodes it gives one physical core. Tile-writing threads default to `SLURM_CPUS_PER_TASK`, overridable with `DZ_THREADS`.
@@ -73,7 +73,7 @@ t1_B02_s14_w3_z1.tif   # well B02, 14th FOV, read with -c 3
 - `t1` time point and `z1` z-plane are fixed
 - Well: letter (row) + zero-padded two-digit number (column), e.g. `A01`
 - FOV: `s` + 1-based index, not padded
-- Channel: `w` + the `-c` value, untouched. The script makes no assumption about output naming; any mapping between image and output channels (e.g. `w1`→`d0`) belongs to the caller (see `plateDZI.slurm`)
+- Channel: `w` + the `-c` value, untouched. The script makes no assumption about output naming; output naming belongs to the caller. Convention: pyramids are named after the acquisition channel, `cN` (`-c N -f cN`), never renumbered. Plates built before Nov 2026 have `d0`–`d2` (w1→d0) or `d1`–`d3`.
 
 The old convention `{row}{col:02d}_f{fov:02d}_d{ch}.{ext}` (e.g. `A01_f00_d0.TIFF`, 0-based zero-padded FOV) is kept as a commented `locImPath` line; older datasets are processed by swapping the two lines. By design there is no command-line option for the naming scheme. Missing images are replaced by a grey placeholder tile with a label.
 
@@ -117,7 +117,7 @@ Double-clicking any image-processing slider resets it to its default value.
 
 ### Plate pages for a screen web site (`plate/`)
 
-`plate/plate-template.html` is a small per-plate page (markup, `var PLATE = {...}` settings, placeholders `@@PLATE@@ @@BACKLINK@@ @@LABEL1@@ @@LABEL2@@ @@CONFIG@@`). Styles and logic are shared by all plates in `plate.css`, `plate.js`, `js/` (copies of `jscripts/`, with `TiledImage.imageToViewportCoordinates`) and `lib/` (self-hosted Bootstrap 3.4.1 CSS, D3 v4). They are deployed to `<web root>/plate/`, and pages load them via `../../plate/`. The README section "Plate pages for a screen web site" covers layout and deployment.
+`plate/plate-template.html` is a small per-plate page (markup, `var PLATE = {...}` settings, placeholders `@@PLATE@@ @@BACKLINK@@ @@TAB1@@ @@TAB2@@ @@LABEL1@@ @@LABEL2@@ @@CONFIG@@`; tabs are labelled by acquisition channel, e.g. `Ch 1`, `Ch 2+3`; only the switch above the heatmaps names biosensors, e.g. AKT/ERK). Styles and logic are shared by all plates in `plate.css`, `plate.js`, `js/` (copies of `jscripts/`, with `TiledImage.imageToViewportCoordinates`) and `lib/` (self-hosted Bootstrap 3.4.1 CSS, D3 v4). They are deployed to `<web root>/plate/`, and pages load them via `../../plate/`. The README section "Plate pages for a screen web site" covers layout and deployment.
 - `plate.css` must load before `bootstrap.min.css`, matching the order of the original inline styles.
 - No jQuery and no Bootstrap JavaScript. D3 must stay v4 (`d3.nest`).
 - The refactor from the inline 880-line page was verified pixel-identical with headless Chromium. Check changes the same way: render old and new pages and compare screenshots.

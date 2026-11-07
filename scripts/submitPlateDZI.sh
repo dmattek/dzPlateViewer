@@ -6,7 +6,7 @@
 #   ./submitPlateDZI.sh [-s PYSCRIPT] OUTROOT INDIR [INDIR ...]
 #
 #   OUTROOT  root output folder; DZI tiling of each plate goes to OUTROOT/<basename of INDIR>
-#   INDIR    folder with all images (96 wells, channels 0-2) of a single plate
+#   INDIR    folder with all images (96 wells, channels 1-3) of a single plate
 #   -s       path to the montage python script
 #            (default: makePlateMontageDZI.py in the same folder as this script)
 #   -h       show this help

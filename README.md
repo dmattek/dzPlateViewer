@@ -109,7 +109,8 @@ To generate `dzi` image pyramids for both channels in the `../demosite2x2` folde
 ### Running on a SLURM cluster
 
 `scripts/submitPlateDZI.sh` generates DZI pyramids for one or more 96-well plates on a SLURM cluster.
-It submits one array job per plate folder; each of its 3 array tasks processes one channel: image files `w1`-`w3` (`-c 1`-`3`) are written as `d0`-`d2`.
+It submits one array job per plate folder; array task N processes acquisition channel N: image files `*_wN_*` (`-c N`) are written as the pyramid `cN.dzi`.
+Pyramids are always named after the acquisition channel, `c1`, `c2`, ..., without renumbering.
 
 #### One-time setup
 
@@ -135,7 +136,7 @@ For example:
 ./scripts/submitPlateDZI.sh /data/dzi /data/plate01 /data/plate02
 ```
 
-produces `d0.dzi`, `d1.dzi`, `d2.dzi` and the corresponding `d0_files/`, `d1_files/`, `d2_files/` tile folders in `/data/dzi/plate01/` and `/data/dzi/plate02/`.
+produces `c1.dzi`, `c2.dzi`, `c3.dzi` and the corresponding `c1_files/`, `c2_files/`, `c3_files/` tile folders in `/data/dzi/plate01/` and `/data/dzi/plate02/`.
 SLURM logs are written to `slurm.out/dz_<jobid>_<channel>.out` in the directory the script is called from.
 Check the progress with `squeue -u $USER` and the run time and memory of finished jobs with `sacct -j <jobid> --format=JobID,Elapsed,MaxRSS,State`.
 
@@ -150,9 +151,9 @@ The job script `scripts/plateDZI.slurm` sets the following parameters; edit it t
 | Image dimensions | 2048x2048 px (`-m 2048 2048`) |
 | DeepZoom tile size | 254 px (`-t 254`) |
 | Image file extension | `tif` (`-x tif`) |
-| Channel `w1` (`-c 1`) | intensities 100 - 4500, output `d0` |
-| Channel `w2` (`-c 2`) | intensities 60 - 4500, output `d1` |
-| Channel `w3` (`-c 3`) | intensities 100 - 2200, output `d2` |
+| Channel 1 (`-c 1`, files `*_w1_*`) | intensities 100 - 4500, output `c1` |
+| Channel 2 (`-c 2`, files `*_w2_*`) | intensities 60 - 4500, output `c2` |
+| Channel 3 (`-c 3`, files `*_w3_*`) | intensities 100 - 2200, output `c3` |
 
 SLURM resources per task: partition `all`, 2 CPUs, 32 GB memory, 2 h.
 Two CPUs correspond to a single physical core on nodes with hyper-threading.
@@ -195,9 +196,9 @@ Nothing is loaded from external servers.
     ├── index.html                  list of plates (optional)
     └── <plate>/
         ├── index.html              filled-in plate-template.html
-        ├── d0.dzi, d0_files/       pyramid shown in tab "Ch 0"
-        ├── d1.dzi, d1_files/       pyramids of the two-channel viewer (tab "Ch 1+2")
-        ├── d2.dzi, d2_files/
+        ├── c1.dzi, c1_files/       pyramid of acquisition channel 1, single-channel viewer (tab "Ch 1")
+        ├── c2.dzi, c2_files/       pyramids of the two-channel viewer (tab "Ch 2+3")
+        ├── c3.dzi, c3_files/
         └── data/                   per-well stats, one CSV per channel of the two-channel viewer
 ```
 
@@ -208,7 +209,7 @@ A plate page loads the shared files with `../../plate/...` and `../../openseadra
 1. **Shared files, once per web site and after every change to them**: copy `plate/` without `plate-template.html` to `<web root>/plate/`, and the three OpenSeadragon folders from `demosite2x2/` to the web root if they are not there yet.
    The web server must be able to read them; copy with world-readable permissions, e.g. `install -D -m 644 plate/plate.js <web root>/plate/plate.js`.
    Replace each file in one step (copy to a temporary name, then rename) so that pages being viewed never load a half-written file.
-2. **Pyramids, per plate**: run `scripts/makePlateMontageDZI.py` once per channel with `-o <web root>/<experiment>/<plate> -f d<N>`. Writing directly into the web site avoids copying hundreds of thousands of tile files.
+2. **Pyramids, per plate**: run `scripts/makePlateMontageDZI.py` once per acquisition channel N with `-c N -f cN -o <web root>/<experiment>/<plate>`. Writing directly into the web site avoids copying hundreds of thousands of tile files.
 3. **Per-well stats, per plate**: copy one CSV per channel to `<plate>/data/`. Required columns: `Row` (A, B, ...), `Col` (1, 2, ...), `npi`, `zscore`, `well.type` and the column with the mean.
    `well.type` marks controls: `neg...` for negative controls, the positive-control label given in the settings below, and `compound` for samples.
 4. **Page, per plate**: fill in `plate-template.html` and save it as `<plate>/index.html`, last, once the pyramids and stats are in place:
@@ -217,16 +218,17 @@ A plate page loads the shared files with `../../plate/...` and `../../openseadra
    |---|---|
    | `@@PLATE@@` | plate name, HTML-escaped |
    | `@@BACKLINK@@` | target of the "Back to index" button, e.g. `../index.html` or `../../index.html#<tab id>` |
-   | `@@LABEL1@@`, `@@LABEL2@@` | names of the two channels on the channel switch, e.g. `AKT`, `ERK` |
+   | `@@TAB1@@`, `@@TAB2@@` | labels of the two viewer tabs, after the acquisition channels shown, e.g. `Ch 1` and `Ch 2+3` |
+   | `@@LABEL1@@`, `@@LABEL2@@` | names of the two channels on the switch above the heatmaps, e.g. `AKT`, `ERK` |
    | `@@CONFIG@@` | settings of the plate, a JavaScript object (JSON), see below |
 
    ```
    {
      "name": "TP-_TP-1",
-     "dzi0": "d0.dzi",
+     "dzi0": "c1.dzi",
      "channels": [
-       {"dzi": "d2.dzi", "csv": "data/statsPerWell_foxo.csv",   "value": "CNfrac_akt.mn", "pos": "pos.akt"},
-       {"dzi": "d1.dzi", "csv": "data/statsPerWell_erkktr.csv", "value": "CNfrac_erk.mn", "pos": "pos.erk"}
+       {"dzi": "c3.dzi", "csv": "data/statsPerWell_foxo.csv",   "value": "CNfrac_akt.mn", "pos": "pos.akt"},
+       {"dzi": "c2.dzi", "csv": "data/statsPerWell_erkktr.csv", "value": "CNfrac_erk.mn", "pos": "pos.erk"}
      ],
      "fov": {"width": 2048, "height": 2048, "perWellX": 4, "perWellY": 4, "padFov": 5, "padWell": 30},
      "osdImages": "../../openseadragon/images/"

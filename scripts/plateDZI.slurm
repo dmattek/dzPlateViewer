@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 # SLURM array job: build a DZI pyramid for one channel of one 96-well plate.
-# Array task ID = output channel (0-2). Image files are numbered from 1,
-# so task 0-2 processes image channel w1-w3 (-c 1-3) and writes d0-d2.
+# Array task ID = acquisition channel (1-3): task N reads the image files
+# of channel N (*_wN_*, -c N) and writes the pyramid cN.dzi + cN_files/.
 #
 # Do not submit directly; use submitPlateDZI.sh, which passes:
 #   $1  path to the montage python script (e.g. makePlateMontageDZI.py)
@@ -17,7 +17,7 @@
 #SBATCH --cpus-per-task=2
 #SBATCH --mem=32G
 #SBATCH --time=02:00:00
-#SBATCH --array=0-2
+#SBATCH --array=1-3
 #SBATCH --output=slurm.out/%x_%A_%a.out
 
 set -euo pipefail
@@ -26,15 +26,14 @@ PYSCRIPT="$1"
 INDIR="$2"
 OUTDIR="$3"
 
-# Output channel (d0-d2) and the corresponding image channel in file names (w1-w3)
+# Acquisition channel (1-3), as numbered in the image file names
 CH="${SLURM_ARRAY_TASK_ID}"
-IMCH=$((CH + 1))
 
-# Intensity range for 16->8 bit rescaling, per output channel
+# Intensity range for 16->8 bit rescaling, per channel
 case "$CH" in
-    0) IMIN=100; IMAX=4500 ;;
-    1) IMIN=60;  IMAX=4500 ;;
-    2) IMIN=100; IMAX=2200 ;;
+    1) IMIN=100; IMAX=4500 ;;
+    2) IMIN=60;  IMAX=4500 ;;
+    3) IMIN=100; IMAX=2200 ;;
     *) echo "Unexpected array task ID: $CH" >&2; exit 1 ;;
 esac
 
@@ -51,7 +50,7 @@ echo "Python:     $(which python)"
 echo "Script:     $PYSCRIPT"
 echo "Input dir:  $INDIR"
 echo "Output dir: $OUTDIR"
-echo "Channel:    image w${IMCH} -> output d${CH} (intensities $IMIN - $IMAX)"
+echo "Channel:    c${CH} (intensities $IMIN - $IMAX)"
 echo "Threads:    ${DZ_THREADS:-${SLURM_CPUS_PER_TASK:-2}}"
 echo "Start:      $(date)"
 
@@ -61,9 +60,9 @@ python "$PYSCRIPT" \
     -m 2048 2048 \
     -t 254 \
     -x tif \
-    -c "$IMCH" \
+    -c "$CH" \
     -I "$IMIN" "$IMAX" \
-    -f "d${CH}" \
+    -f "c${CH}" \
     -r "${DZ_THREADS:-${SLURM_CPUS_PER_TASK:-2}}" \
     -o "$OUTDIR" \
     "$INDIR"
