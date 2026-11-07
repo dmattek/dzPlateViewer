@@ -1,0 +1,230 @@
+<!-- Plate page. Placeholders in double at-signs are filled in by build_site.py (screenR pipeline).
+     Styles and logic are shared by all plates: <web root>/plate/ (source: dzPlateViewer/plate/). -->
+<html>
+<title>@@PLATE@@</title>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- plate.css before bootstrap.min.css: Bootstrap overrides it where both set a property -->
+	<link rel="stylesheet" href="../../plate/plate.css">
+	<link rel="stylesheet" href="../../plate/lib/bootstrap.min.css">
+	<script src="../../plate/lib/d3.v4.min.js"></script>
+	<script src="../../plate/lib/d3-scale-chromatic.v1.min.js"></script>
+	<script src="../../openseadragon/openseadragon.min.js"></script>
+	<script src="../../openseadragonfiltering/openseadragon-filtering.js"></script>
+	<script src="../../openseadragoncanvasoverlay/openseadragon-canvas-overlay.js"></script>
+	<script src="../../plate/js/heatmap.js"></script>
+	<script src="../../plate/js/d3-simple-slider.min.js"></script>
+	<script src="../../plate/js/overlay.js"></script>
+	<script src="../../plate/js/boxplot.js"></script>
+</head>
+
+<body onload="document.getElementById('defaultOpenTab').click();">
+
+        <h2>@@PLATE@@</h2>
+
+	 <!-- Tab links -->
+	<div class="tab">
+	<button class="tablinks active" onclick="openTab(event, 'tabch0',0)" id="defaultOpenTab">Ch 0</button>
+	<button class="tablinks" onclick="openTab(event, 'tabch12',0)" id="Tab12">Ch 1+2</button>
+	<button onclick="window.location.href = '@@BACKLINK@@';">Back to index</button>
+	</div>
+
+	<!-- Tab content -->
+
+	<div id="tabch0" class="tabcontent">
+
+		<div class="col-md-8">
+			<div class="osd" id="osd0"></div>
+		</div>
+
+		<div class="col-md-4">
+			<br>
+			<div id="my_map"></div>
+
+			<label class="switch">
+				<input type="checkbox" id="chbInv0" onclick=fSwitchInv(viewer0,selFilters0)>
+				<div class="slider">
+					<span class="on">Inv</span>
+					<span class="off">Orig</span>
+				</div>
+			</label>
+			<br>
+			<br>
+			<div class="slidecontainer">
+				<input type="range" min="-100" max="100" value="0" class="sliderlong" id="slBright0">
+				<p>Brightness: <span id="valBright0"></span></p>
+			</div>
+			<br>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="4" value="1" step="0.1" class="sliderlong" id="slContr0">
+				<p>Contrast: <span id="valContr0"></span></p>
+			</div>
+			<br>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="255" value="0" step="1" class="sliderlong" id="slLevMin0">
+				<p>Level min: <span id="valLevMin0"></span></p>
+			</div>
+			<br>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="255" value="255" step="1" class="sliderlong" id="slLevMax0">
+				<p>Level max: <span id="valLevMax0"></span></p>
+			</div>
+		</div>
+
+	</div>
+
+	<div id="tabch12" class="tabcontent">
+
+		<div class="col-md-8">
+			<div class="osd" id="osd12"></div>
+		</div>
+
+		<div class="col-md-4">	
+			<div class="switch-button">
+				<span class="active" style="left: 0%"></span><button class="switch-button-case left active-case">@@LABEL1@@</button><button class="switch-button-case right">@@LABEL2@@</button>
+			</div>
+			<br>
+
+			<br>
+			<br>
+			<div id="chd1" style="display: block;">
+				<div class="tab">
+					<button class="tablinks active" onclick="openTab(event, 'tabInt',2)" id="default1">Int</button>
+					<button class="tablinks" onclick="openTab(event, 'tabNPI',2)">NPI</button>
+					<button class="tablinks" onclick="openTab(event, 'tabZscore',2)">Zscore</button>
+					<button class="tablinks" onclick="openTab(event, 'QCt',2)">QC</button>
+				</div>
+				<div id="tabInt" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq317" width="300" height="40">
+						</svg>
+						<div id="slider-range"></div>
+						<div id="my_dataviz"></div>
+						<button id="overlay">Clear overlay</button>
+						<div id="slider-simple"></div>
+					</div>
+				</div>
+				<div id="tabNPI" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq318" width="300" height="40">
+						</svg>
+						<div id="slider-range2"></div>
+						<div id="my_dataviz2"></div>
+						<button id="overlay2">Clear overlay</button>
+						<div id="slider-simple2"></div>
+
+					</div>
+				</div>
+				<div id="tabZscore" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq319" width="300" height="40">
+						</svg>
+						<div id="slider-range3"></div>
+						<div id="my_dataviz3"></div>
+						<button id="overlay3">Clear overlay</button>
+						<div id="slider-simple3"></div>
+					</div>
+				</div>
+				<div id="QCt" class="tabcontent">
+					<div class="col-md-12">
+						<div id="QC"></div>
+					</div>
+				</div>
+			</div>
+
+			<div id="chd2" style="display: none;">
+				<div class="tab">
+					<button class="tablinks active" onclick="openTab(event, 'tabInt2',2)" id="default2">Int</button>
+					<button class="tablinks" onclick="openTab(event, 'tabNPI2',2)">NPI</button>
+					<button class="tablinks" onclick="openTab(event, 'tabZscore2',2)">Zscore</button>
+					<button class="tablinks" onclick="openTab(event, 'QCt2',2)">QC</button>
+
+				</div>
+				<div id="tabInt2" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq320" width="300" height="40">
+						</svg>
+						<div id="slider-range4"></div>
+						<div id="my_dataviz4"></div>
+						<button id="overlay4">Clear overlay</button>
+						<div id="slider-simple4"></div>
+					</div>
+				</div>
+				<div id="tabNPI2" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq321" width="300" height="40">
+						</svg>
+						<div id="slider-range5"></div>
+						<div id="my_dataviz5"></div>
+						<button id="overlay5">Clear overlay</button>
+						<div id="slider-simple5"></div>
+					</div>
+				</div>
+				<div id="tabZscore2" class="tabcontent">
+					<div class="col-md-12">
+						<br>
+						<svg id="seq322" width="300" height="40">
+						</svg>
+						<div id="slider-range6"></div>
+						<div id="my_dataviz6"></div>
+						<button id="overlay6">Clear overlay</button>
+						<div id="slider-simple6"></div>
+					</div>
+				</div>
+				<div id="QCt2" class="tabcontent">
+					<div class="col-md-12">
+						<div id="QC2"></div>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="info" id="locator" style="float: inline-end; width: 150px;"></div>
+			<label class="switch">
+				<input type="checkbox" id="chbInv12" onclick=fSwitchInv(viewer12,selFilters12)>
+				<div class="slider">
+					<span class="on">Inv</span>
+					<span class="off">Orig</span>
+				</div>
+			</label>
+			<br>
+			<br>
+			<div class="slidecontainer">
+				<input type="range" min="-100" max="100" value="0" class="sliderlong" id="slBright12">
+				<p>Brightness: <span id="valBright12"></span></p>
+			</div>
+			<br>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="4" value="1" step="0.1" class="sliderlong" id="slContr12">
+				<p>Contrast: <span id="valContr12"></span></p>
+			</div>
+			<br>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="255" value="0" step="1" class="sliderlong" id="slLevMin12">
+				<p>Level min: <span id="valLevMin12"></span></p>
+			</div>
+			<br>
+			<div class="slidecontainer">
+				<input type="range" min="0" max="255" value="255" step="1" class="sliderlong" id="slLevMax12">
+				<p>Level max: <span id="valLevMax12"></span></p>
+			</div>
+
+		</div>
+	</div>
+
+
+
+	<script>
+		var PLATE = @@CONFIG@@;
+	</script>
+	<script src="../../plate/plate.js"></script>
+
+</body>
+
+</html>

@@ -422,6 +422,13 @@ def parseArguments():
                 default=254)
 
         parser.add_argument(
+                '-F',
+                '--tileformat',
+                help='Format of DeepZoom tiles, png (lossless) or jpg (lossy, smaller), default png',
+                choices=['png', 'jpg'],
+                default='png')
+
+        parser.add_argument(
                 '-q',
                 '--imquality',
                 help='Image quality (0.1 - 1) for JPG or compression level for PNG, default 0.8.',
@@ -667,7 +674,7 @@ if __name__ == "__main__":
 
     creator = ImageCreator(
         tile_size = args.tilesz,
-        tile_format = 'png',
+        tile_format = args.tileformat,
         image_quality = args.imquality,
         resize_filter = 'antialias',
         n_threads = args.cores,

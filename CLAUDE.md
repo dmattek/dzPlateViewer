@@ -46,8 +46,9 @@ Key flags:
 - `-o dir` — output directory for the DZI file and tiles folder
 - `-I min max` — intensity clipping before 16→8 bit conversion (default: 250 3000)
 - `-i` — invert the output image
-- `-q 0.8` — PNG compression quality (0–1)
-- `-t 254` — DeepZoom tile size in pixels
+- `-t 254` — DeepZoom tile size in pixels (+1 px overlap per side); 510 gives 4× fewer files
+- `-F png|jpg` — tile format (default png)
+- `-q 0.8` — JPEG quality for jpg; for png the compression level is `round((1-q)*10)` (0.8 → 2; 0.9 → 1, 1.5× larger files)
 - `-m W H` — FOV image dimensions in pixels (default: 1104 1104)
 - `-x ext` — image file extension (default: TIFF)
 - `-r N` — number of threads writing DeepZoom tiles (default: 2)
@@ -113,3 +114,11 @@ The D3 variant adds interactive heatmaps overlaid on the plate image driven by C
 Image filters (invert, brightness, contrast, level min/max) are applied in real time via the **OpenSeadragon Filtering** plugin (`openseadragonfiltering/`). Well border highlights are drawn via the **OpenSeadragon CanvasOverlay** plugin (`openseadragoncanvasoverlay/`).
 
 Double-clicking any image-processing slider resets it to its default value.
+
+### Plate pages for a screen web site (`plate/`)
+
+`plate/plate-template.html` is a small per-plate page (markup, `var PLATE = {...}` settings, placeholders `@@PLATE@@ @@BACKLINK@@ @@LABEL1@@ @@LABEL2@@ @@CONFIG@@`). Styles and logic are shared by all plates in `plate.css`, `plate.js`, `js/` (copies of `jscripts/`, with `TiledImage.imageToViewportCoordinates`) and `lib/` (self-hosted Bootstrap 3.4.1 CSS, D3 v4). They are deployed to `<web root>/plate/`, and pages load them via `../../plate/`. The README section "Plate pages for a screen web site" covers layout and deployment.
+- `plate.css` must load before `bootstrap.min.css`, matching the order of the original inline styles.
+- No jQuery and no Bootstrap JavaScript. D3 must stay v4 (`d3.nest`).
+- The refactor from the inline 880-line page was verified pixel-identical with headless Chromium. Check changes the same way: render old and new pages and compare screenshots.
+
